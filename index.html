@@ -363,6 +363,49 @@
     .bottom-dashboard { grid-template-columns: 1fr; }
     .artwork-cards { grid-template-columns: 1fr 1fr; }
   }
+
+  /* البوسة العائمة الكبيرة بعد 3 دقائق رسم */
+  #babaKissOverlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.2);
+    z-index: 99999;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    opacity: 0;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+  #babaKissOverlay.show-kiss {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+    animation: floatKiss 2.5s ease-in-out infinite alternate;
+  }
+  .big-kiss-emoji {
+    font-size: 130px;
+    filter: drop-shadow(0 12px 25px rgba(255, 42, 109, 0.65));
+    line-height: 1.1;
+  }
+  .kiss-msg-pill {
+    background: linear-gradient(135deg, #ff2a6d, #ff758f);
+    color: #fff;
+    padding: 10px 24px;
+    border-radius: 30px;
+    font-size: 20px;
+    font-weight: 800;
+    border: 2px solid #ffd700;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
+    margin-top: 8px;
+  }
+  @keyframes floatKiss {
+    0% { transform: translate(-50%, -52%) scale(1) rotate(-4deg); }
+    100% { transform: translate(-50%, -48%) scale(1.08) rotate(4deg); }
+  }
+
 </style>
 </head>
 <body class="light-theme">
@@ -1256,6 +1299,7 @@ const Studio = {
     });
 
     const startDraw = (e) => {
+      BabaKissTimer.markActivity();
       if (e.cancelable) e.preventDefault();
       const pos = this.getPos(e);
       const eng = this.currentTool.engine || "ink";
@@ -1292,6 +1336,7 @@ const Studio = {
     };
 
     const moveDraw = (e) => {
+      if (this.isDrawing) BabaKissTimer.markActivity();
       if (!this.isDrawing) return;
       if (e.cancelable) e.preventDefault();
       const pos = this.getPos(e);
@@ -1487,7 +1532,43 @@ const ProExtras = {
   }
 };
 
+
+const BabaKissTimer = {
+  activeSeconds: 0,
+  lastActivityTime: 0,
+
+  init() {
+    // حساب كل ثانية تكون فيها آسيا بترسم أو بتلون بنشاط (لو وقفت أكتر من 10 ثواني العداد يقف مؤقتاً)
+    setInterval(() => {
+      const now = Date.now();
+      if (Studio.isDrawing || (now - this.lastActivityTime < 5000 && this.lastActivityTime > 0)) {
+        this.activeSeconds++;
+        if (this.activeSeconds >= 180) { // 180 ثانية = 3 دقائق رسم متواصل
+          this.activeSeconds = 0;
+          this.triggerKiss();
+        }
+      }
+    }, 1000);
+  },
+
+  markActivity() {
+    this.lastActivityTime = Date.now();
+  },
+
+  triggerKiss() {
+    const el = document.getElementById("babaKissOverlay");
+    if (!el) return;
+    el.classList.add("show-kiss");
+    Studio.playTone(660);
+    setTimeout(() => Studio.playTone(880), 180);
+    setTimeout(() => {
+      el.classList.remove("show-kiss");
+    }, 5500); // تفضل عائمة 5.5 ثواني وتختفي بنعومة
+  }
+};
+
 window.addEventListener("DOMContentLoaded", () => {
+  BabaKissTimer.init();
   ProExtras.init();
   checkTimeBasedTheme();
   setInterval(checkTimeBasedTheme, 30000);
@@ -1502,5 +1583,10 @@ window.addEventListener("DOMContentLoaded", () => {
   Studio.init();
 });
 </script>
+<div id="babaKissOverlay">
+  <div class="big-kiss-emoji">💋💖</div>
+  <div class="kiss-msg-pill">أحلى بوسة من بابا مينا لأشطر فنانة في الدنيا 😘👑</div>
+</div>
+
 </body>
 </html>
