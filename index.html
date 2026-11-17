@@ -381,6 +381,7 @@
 <!-- 1. رسالة بابا مينا والحكم في القمة -->
 <div class="asia-banner" id="asiaBanner">
   <span class="badge">💖 من بابا مينا لـ آسيا</span>
+  <span class="badge" id="asiaRankBadge" style="background:rgba(0,229,255,0.18); border-color:#00e5ff; color:#00e5ff;">🌟 اللقب: فنانة مبدعة (0 نقطة)</span>
   <span id="asiaQuote">يا آسيا يا أغلى بنوتة في الدنيا، بابا مينا فخور بيكي.. ابدعي وارسمي وذاكري عشان تبقي أنجح بنوتة في العالم 👑✨</span>
   <button type="button" class="dash-btn" style="background:rgba(255,215,0,0.2); border-color:#ffd700; color:#ffd700;" onclick="nextBabaWisdom()">💌 التالي (رسالة / حكمة)</button>
 </div>
@@ -428,6 +429,8 @@
       <button type="button" class="dash-btn" onclick="Studio.adjustZoom(-0.15)">➖</button>
       <button type="button" class="dash-btn" onclick="Studio.resetView()">🎯 توسيط</button>
       <button type="button" class="dash-btn" style="color:#e11d48;" onclick="Studio.clearActiveLayer()">🗑️ مسح</button>
+      <button type="button" class="dash-btn active-cyan" id="musicBtn" onclick="ProExtras.toggleRelaxMusic()">🎵 موسيقى هادية: مطفأة</button>
+      <button type="button" class="dash-btn active-gold" onclick="ProExtras.playTimeLapse()">🎬 فيديو خطوات الرسم</button>
       <button type="button" class="dash-btn btn-export" onclick="Studio.exportWithSignature()">🏆 حفظ بتوقيع آسيا</button>
     </div>
   </div>
@@ -1172,6 +1175,7 @@ const Studio = {
     const canvas = this.layers[this.activeLayerIdx];
     this.history.push({ layerIdx: this.activeLayerIdx, data: canvas.toDataURL() });
     if (this.history.length > 35) this.history.shift();
+    ProExtras.recordFrameAndSave();
   },
 
   undo() {
@@ -1368,7 +1372,115 @@ const Studio = {
   }
 };
 
+
+const ProExtras = {
+  frames: [],
+  xp: parseInt(localStorage.getItem("asia_xp") || "0"),
+  musicPlaying: false,
+  musicTimer: null,
+  audioCtx: null,
+
+  init() {
+    this.updateRankUI();
+    this.restoreAutoSave();
+  },
+
+  addXP(pts) {
+    this.xp += pts;
+    localStorage.setItem("asia_xp", this.xp);
+    this.updateRankUI();
+  },
+
+  updateRankUI() {
+    const el = document.getElementById("asiaRankBadge");
+    if (!el) return;
+    let rank = "فنانة مبدعة 🎨";
+    if (this.xp >= 1500) rank = "أسطورة الفن فخر بابا مينا 👑";
+    else if (this.xp >= 600) rank = "أميرة الألوان 🌟";
+    else if (this.xp >= 200) rank = "رسامة متألقة ✨";
+    el.innerText = `🏅 اللقب: ${rank} (${this.xp} نقطة)`;
+  },
+
+  recordFrameAndSave() {
+    try {
+      const c1 = document.getElementById("layer1");
+      if (!c1) return;
+      const snap = c1.toDataURL("image/png");
+      this.frames.push(snap);
+      if (this.frames.length > 60) this.frames.shift();
+      localStorage.setItem("asia_autosave_layer1", snap);
+      this.addXP(5);
+    } catch (e) {}
+  },
+
+  restoreAutoSave() {
+    try {
+      const saved = localStorage.getItem("asia_autosave_layer1");
+      if (!saved) return;
+      const c1 = document.getElementById("layer1");
+      if (!c1) return;
+      const img = new Image();
+      img.src = saved;
+      img.onload = () => {
+        c1.getContext("2d").drawImage(img, 0, 0);
+      };
+    } catch (e) {}
+  },
+
+  playTimeLapse() {
+    if (this.frames.length < 2) {
+      alert("لوني شوية الأول يا آسيا عشان أعرضلك فيديو خطوات رسمتك الجميلة 🎨💖");
+      return;
+    }
+    const c1 = document.getElementById("layer1");
+    const ctx = c1.getContext("2d");
+    let idx = 0;
+    const interval = setInterval(() => {
+      if (idx >= this.frames.length) {
+        clearInterval(interval);
+        return;
+      }
+      const img = new Image();
+      img.src = this.frames[idx];
+      img.onload = () => {
+        ctx.clearRect(0, 0, 700, 700);
+        ctx.drawImage(img, 0, 0);
+      };
+      idx++;
+    }, 90);
+  },
+
+  toggleRelaxMusic() {
+    const btn = document.getElementById("musicBtn");
+    this.musicPlaying = !this.musicPlaying;
+    if (!this.musicPlaying) {
+      clearInterval(this.musicTimer);
+      if (btn) btn.innerText = "🎵 موسيقى هادية: مطفأة";
+      return;
+    }
+    if (btn) btn.innerText = "🎶 موسيقى هادية: شغالة";
+    if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 392.00, 329.63];
+    let step = 0;
+    this.musicTimer = setInterval(() => {
+      if (!this.musicPlaying) return;
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(notes[step % notes.length], this.audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.03, this.audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 1.1);
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+      osc.start();
+      osc.stop(this.audioCtx.currentTime + 1.1);
+      step++;
+    }, 650);
+  }
+};
+
 window.addEventListener("DOMContentLoaded", () => {
+  ProExtras.init();
   checkTimeBasedTheme();
   setInterval(checkTimeBasedTheme, 30000);
   if (window.innerWidth <= 960) {
