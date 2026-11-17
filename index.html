@@ -406,6 +406,86 @@
     100% { transform: translate(-50%, -48%) scale(1.08) rotate(4deg); }
   }
 
+
+  /* المرحلة الاحترافية الثانية: معرض الأعمال + الشبكة + الأشكال الهندسية */
+  #gridOverlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 45;
+    display: none;
+    background-image:
+      linear-gradient(to right, rgba(2, 132, 199, 0.22) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(2, 132, 199, 0.22) 1px, transparent 1px);
+    background-size: 35px 35px;
+  }
+  #shapePreviewCanvas {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 48;
+  }
+  #asiaGalleryModal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 12, 20, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  #asiaGalleryModal.open { display: flex; }
+  .gallery-box {
+    background: var(--bg-card);
+    border: 2px solid var(--accent-gold);
+    border-radius: 16px;
+    width: min(94vw, 860px);
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 18px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+  }
+  .gallery-item {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+  .gallery-item img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #fff;
+    border: 1px solid var(--border-subtle);
+  }
+  .shapes-subbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg-panel);
+    padding: 6px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+    font-size: 11px;
+  }
+
 </style>
 </head>
 <body class="light-theme">
@@ -459,6 +539,8 @@
     <div class="canvas-stack" id="canvasStack">
       <canvas id="layer0" width="700" height="700"></canvas>
       <canvas id="layer1" width="700" height="700"></canvas>
+      <div id="gridOverlay"></div>
+      <canvas id="shapePreviewCanvas" width="700" height="700"></canvas>
       <svg id="lineArtLayer" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg"></svg>
     </div>
 
@@ -476,7 +558,14 @@
       <button type="button" class="dash-btn active-cyan" id="musicBtn" onclick="ProExtras.toggleRelaxMusic()">🎵 موسيقى هادية: مطفأة</button>
       <button type="button" class="dash-btn active-gold" onclick="ProExtras.playTimeLapse()">🎬 مشاهدة خطوات الرسم</button>
       <button type="button" class="dash-btn active-pink" id="exportVideoBtn" onclick="ProExtras.exportRealVideo()">📹 تحميل فيديو للمشاركة</button>
-      <button type="button" class="dash-btn btn-export" onclick="Studio.exportWithSignature()">🏆 حفظ بتوقيع آسيا</button>
+      <select id="exportStyleSelect" class="dash-btn" style="padding:5px 8px;" title="اختاري ستايل الإخراج النهائي">
+        <option value="classic">🖼️ حفظ: إطار كلاسيك</option>
+        <option value="royal_gold">👑 حفظ: إطار ملكي ذهبي مزخرف</option>
+        <option value="warm_glow">☀️ حفظ: إضاءة دافئة سينمائية</option>
+      </select>
+      <button type="button" class="dash-btn btn-export" onclick="Stage2Pro.exportEnhanced()">🏆 حفظ بتوقيع آسيا</button>
+      <button type="button" class="dash-btn active-gold" onclick="Stage2Pro.saveToGallery()">💾 حفظ في ألبوم آسيا</button>
+      <button type="button" class="dash-btn active-pink" onclick="Stage2Pro.openGallery()">🖼️ معرض لوحاتي</button>
     </div>
   </div>
 
@@ -1698,7 +1787,285 @@ function factoryResetStudio() {
   Studio.playTone(700);
 }
 
+
+const Stage2Pro = {
+  shapeMode: "none",
+  shapeStartX: 0,
+  shapeStartY: 0,
+  isDrawingShape: false,
+  gridVisible: false,
+
+  init() {
+    this.bindShapeEvents();
+    this.bindKeyboardShortcuts();
+  },
+
+  setShapeMode(mode, btn) {
+    this.shapeMode = mode;
+    document.querySelectorAll(".shapes-subbar .dash-btn").forEach(b => {
+      if (b.id !== "gridToggleBtn") b.classList.remove("active-mint");
+    });
+    if (btn) btn.classList.add("active-mint");
+    Studio.playTone(580);
+  },
+
+  toggleGrid() {
+    this.gridVisible = !this.gridVisible;
+    const g = document.getElementById("gridOverlay");
+    const btn = document.getElementById("gridToggleBtn");
+    if (g) g.style.display = this.gridVisible ? "block" : "none";
+    if (btn) btn.innerText = this.gridVisible ? "🌐 الشبكة: شغالة ✓" : "🌐 الشبكة: مطفأة";
+  },
+
+  drawShapeOnContext(ctx, mode, x1, y1, x2, y2) {
+    ctx.save();
+    ctx.strokeStyle = Studio.color;
+    ctx.lineWidth = Math.max(2, Studio.size);
+    ctx.globalAlpha = Studio.opacity;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const r = Math.sqrt(dx * dx + dy * dy);
+
+    if (mode === "line") {
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+    } else if (mode === "circle") {
+      ctx.arc(x1, y1, r, 0, Math.PI * 2);
+    } else if (mode === "heart") {
+      const topY = y1 - r * 0.4;
+      ctx.moveTo(x1, topY + r * 0.35);
+      ctx.bezierCurveTo(x1, topY, x1 - r * 0.65, topY, x1 - r * 0.65, topY + r * 0.4);
+      ctx.bezierCurveTo(x1 - r * 0.65, topY + r * 0.85, x1, topY + r * 1.15, x1, topY + r * 1.35);
+      ctx.bezierCurveTo(x1, topY + r * 1.15, x1 + r * 0.65, topY + r * 0.85, x1 + r * 0.65, topY + r * 0.4);
+      ctx.bezierCurveTo(x1 + r * 0.65, topY, x1, topY, x1, topY + r * 0.35);
+    } else if (mode === "star") {
+      const spikes = 5;
+      const outerR = r;
+      const innerR = r * 0.45;
+      for (let i = 0; i < spikes * 2; i++) {
+        const rad = i % 2 === 0 ? outerR : innerR;
+        const angle = (i * Math.PI) / spikes - Math.PI / 2;
+        const sx = x1 + Math.cos(angle) * rad;
+        const sy = y1 + Math.sin(angle) * rad;
+        if (i === 0) ctx.moveTo(sx, sy);
+        else ctx.lineTo(sx, sy);
+      }
+      ctx.closePath();
+    }
+    ctx.stroke();
+    ctx.restore();
+  },
+
+  bindShapeEvents() {
+    const stack = document.getElementById("canvasStack");
+    const prevCanvas = document.getElementById("shapePreviewCanvas");
+    if (!stack || !prevCanvas) return;
+    const pCtx = prevCanvas.getContext("2d");
+
+    const onDown = (e) => {
+      if (this.shapeMode === "none") return;
+      e.stopImmediatePropagation();
+      if (e.cancelable) e.preventDefault();
+      BabaKissTimer.markActivity();
+      const pos = Studio.getPos(e);
+      this.isDrawingShape = true;
+      this.shapeStartX = pos.x;
+      this.shapeStartY = pos.y;
+    };
+
+    const onMove = (e) => {
+      if (!this.isDrawingShape || this.shapeMode === "none") return;
+      e.stopImmediatePropagation();
+      if (e.cancelable) e.preventDefault();
+      const pos = Studio.getPos(e);
+      pCtx.clearRect(0, 0, 700, 700);
+      this.drawShapeOnContext(pCtx, this.shapeMode, this.shapeStartX, this.shapeStartY, pos.x, pos.y);
+    };
+
+    const onUp = (e) => {
+      if (!this.isDrawingShape || this.shapeMode === "none") return;
+      e.stopImmediatePropagation();
+      pCtx.clearRect(0, 0, 700, 700);
+      const rect = stack.getBoundingClientRect();
+      const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+      const clientY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
+      const endX = (clientX - rect.left) * (700 / rect.width);
+      const endY = (clientY - rect.top) * (700 / rect.height);
+
+      const targetCtx = Studio.layers[Studio.activeLayerIdx].getContext("2d");
+      this.drawShapeOnContext(targetCtx, this.shapeMode, this.shapeStartX, this.shapeStartY, endX, endY);
+      this.isDrawingShape = false;
+      Studio.saveHistory();
+      Studio.playTone(680);
+    };
+
+    stack.addEventListener("mousedown", onDown, true);
+    window.addEventListener("mousemove", onMove, true);
+    window.addEventListener("mouseup", onUp, true);
+    stack.addEventListener("touchstart", onDown, { capture: true, passive: false });
+    window.addEventListener("touchmove", onMove, { capture: true, passive: false });
+    window.addEventListener("touchend", onUp, true);
+  },
+
+  // معرض أعمال آسيا (My Gallery)
+  getGalleryList() {
+    try { return JSON.parse(localStorage.getItem("asia_art_gallery") || "[]"); }
+    catch (e) { return []; }
+  },
+
+  saveToGallery() {
+    const title = prompt("اكتبي اسماً جميلاً للوحتك يا آسيا:", `لوحة آسيا الرائعة #${this.getGalleryList().length + 1}`);
+    if (!title) return;
+
+    ProExtras.captureCompositeFrame((thumbData) => {
+      const c1Data = document.getElementById("layer1").toDataURL("image/png");
+      const artId = document.getElementById("artworkSelector").value;
+      const list = this.getGalleryList();
+      list.unshift({
+        id: Date.now(),
+        title: title,
+        date: new Date().toLocaleDateString("ar-EG"),
+        thumb: thumbData,
+        layer1: c1Data,
+        artId: artId
+      });
+      if (list.length > 20) list.pop();
+      localStorage.setItem("asia_art_gallery", JSON.stringify(list));
+      if (typeof ProExtras !== "undefined") ProExtras.addXP(25);
+      Studio.playTone(880);
+      alert("🎉 تم حفظ لوحتك في معرض إبداعات آسيا بنجاح (+25 نقطة)!");
+    });
+  },
+
+  openGallery() {
+    const modal = document.getElementById("asiaGalleryModal");
+    const container = document.getElementById("galleryItemsContainer");
+    const list = this.getGalleryList();
+    if (list.length === 0) {
+      container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; font-size:15px;">معرضك لسه فاضي يا آسيا 🎨.. لوني أول لوحة واضغطي على <strong>«💾 حفظ في ألبوم آسيا»</strong>!</div>`;
+    } else {
+      container.innerHTML = list.map(item => `
+        <div class="gallery-item">
+          <img src="${item.thumb}" alt="${item.title}">
+          <div style="font-weight:800; font-size:13px;">${item.title}</div>
+          <div style="font-size:11px; color:var(--text-secondary);">📅 ${item.date}</div>
+          <div style="display:flex; gap:5px; justify-content:center;">
+            <button type="button" class="dash-btn active-mint" onclick="Stage2Pro.loadFromGallery(${item.id})">🖌️ إكمال التلوين</button>
+            <button type="button" class="dash-btn" style="color:#e11d48;" onclick="Stage2Pro.deleteFromGallery(${item.id})">🗑️</button>
+          </div>
+        </div>
+      `).join("");
+    }
+    modal.classList.add("open");
+  },
+
+  closeGallery() {
+    document.getElementById("asiaGalleryModal").classList.remove("open");
+  },
+
+  loadFromGallery(id) {
+    const item = this.getGalleryList().find(x => x.id === id);
+    if (!item) return;
+    document.getElementById("artworkSelector").value = item.artId || "farm";
+    Studio.loadArtwork(item.artId || "farm");
+    const c1 = document.getElementById("layer1");
+    const ctx = c1.getContext("2d");
+    const img = new Image();
+    img.src = item.layer1;
+    img.onload = () => {
+      ctx.clearRect(0, 0, 700, 700);
+      ctx.drawImage(img, 0, 0);
+      Studio.saveHistory();
+      this.closeGallery();
+    };
+  },
+
+  deleteFromGallery(id) {
+    if (!confirm("هل تريدين حذف هذه اللوحة من المعرض؟")) return;
+    const updated = this.getGalleryList().filter(x => x.id !== id);
+    localStorage.setItem("asia_art_gallery", JSON.stringify(updated));
+    this.openGallery();
+  },
+
+  // تصدير اللوحة مع فلاتر الإخراج النهائي (إطار ملكي ذهبي أو إضاءة دافئة)
+  exportEnhanced() {
+    const style = document.getElementById("exportStyleSelect").value;
+    if (style === "classic") {
+      Studio.exportWithSignature();
+      return;
+    }
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = 1440;
+    exportCanvas.height = 1520;
+    const eCtx = exportCanvas.getContext("2d");
+
+    eCtx.fillStyle = style === "royal_gold" ? "#1e162b" : "#fff8eb";
+    eCtx.fillRect(0, 0, 1440, 1520);
+
+    if (style === "warm_glow") {
+      eCtx.filter = "contrast(1.06) saturate(1.18) sepia(0.08)";
+    }
+    eCtx.fillStyle = "#ffffff";
+    eCtx.fillRect(20, 20, 1400, 1400);
+    Studio.layers.forEach(l => eCtx.drawImage(l, 20, 20, 1400, 1400));
+
+    const inner = document.getElementById("lineArtLayer").innerHTML;
+    const fixedSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1400" viewBox="0 0 700 700">${inner}</svg>`;
+    const img = new Image();
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(fixedSvg);
+    img.onload = () => {
+      eCtx.drawImage(img, 20, 20, 1400, 1400);
+      eCtx.filter = "none";
+
+      if (style === "royal_gold") {
+        eCtx.strokeStyle = "#ffd700";
+        eCtx.lineWidth = 14;
+        eCtx.strokeRect(14, 14, 1412, 1412);
+        eCtx.strokeStyle = "#ff2a6d";
+        eCtx.lineWidth = 4;
+        eCtx.strokeRect(26, 26, 1388, 1388);
+      }
+
+      eCtx.fillStyle = "#151722";
+      eCtx.fillRect(0, 1435, 1440, 85);
+      eCtx.fillStyle = "#ffd700";
+      eCtx.font = "bold 32px sans-serif";
+      eCtx.textAlign = "center";
+      eCtx.fillText("👑 إبداع الفنانة آسيا حبيبة بابا مينا • فخور بيكي دايماً 💖", 720, 1488);
+
+      const link = document.createElement("a");
+      link.download = `Asia-${style}-${Date.now()}.png`;
+      link.href = exportCanvas.toDataURL("image/png");
+      link.click();
+    };
+  },
+
+  // اختصارات لوحة المفاتيح للكمبيوتر (Ctrl+Z و [ و ])
+  bindKeyboardShortcuts() {
+    window.addEventListener("keydown", (e) => {
+      if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "z") {
+        e.preventDefault();
+        Studio.undo();
+      } else if (e.key === "]") {
+        Studio.size = Math.min(100, Studio.size + 2);
+        document.getElementById("brushSize").value = Studio.size;
+        document.getElementById("sizeVal").innerText = Studio.size;
+      } else if (e.key === "[") {
+        Studio.size = Math.max(1, Studio.size - 2);
+        document.getElementById("brushSize").value = Studio.size;
+        document.getElementById("sizeVal").innerText = Studio.size;
+      }
+    });
+  }
+};
+
 window.addEventListener("DOMContentLoaded", () => {
+  Stage2Pro.init();
   BabaKissTimer.init();
   ProExtras.init();
   checkTimeBasedTheme();
@@ -1717,6 +2084,18 @@ window.addEventListener("DOMContentLoaded", () => {
 <div id="babaKissOverlay">
   <div class="big-kiss-emoji">💋💖</div>
   <div class="kiss-msg-pill">أحلى بوسة من بابا مينا لأشطر فنانة في الدنيا 😘👑</div>
+</div>
+
+
+<!-- نافذة معرض أعمال آسيا (My Gallery) -->
+<div id="asiaGalleryModal" onclick="if(event.target===this) Stage2Pro.closeGallery()">
+  <div class="gallery-box">
+    <div class="card-header" style="font-size:16px;">
+      <span>🖼️ معرض إبداعات الفنانة آسيا حبيبة بابا مينا</span>
+      <button type="button" class="dash-btn" style="color:#e11d48; border-color:#e11d48;" onclick="Stage2Pro.closeGallery()">✖ إغلاق المعرض</button>
+    </div>
+    <div id="galleryItemsContainer" class="gallery-grid"></div>
+  </div>
 </div>
 
 </body>
