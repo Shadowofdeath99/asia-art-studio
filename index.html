@@ -279,6 +279,60 @@
     border: 1px solid transparent;
   }
   .layer-item.active { border-color: var(--accent-cyan); }
+
+  /* تحسينات التجاوب الكامل للموبايل والتابلت */
+  .side-column.hidden-drawer {
+    display: none !important;
+  }
+
+  @media (max-width: 960px) {
+    .asia-banner {
+      font-size: 16px !important;
+      padding: 8px 12px !important;
+    }
+    .asia-banner .badge {
+      font-size: 13px !important;
+    }
+    .main-row-arena {
+      flex-direction: column !important;
+      align-items: center !important;
+      justify-content: center !important;
+      padding: 10px 6px !important;
+      gap: 10px !important;
+    }
+    .center-column {
+      order: 1 !important;
+      width: 100% !important;
+      min-width: 100% !important;
+      align-items: center !important;
+      justify-content: center !important;
+    }
+    .canvas-stack {
+      width: min(92vw, 440px) !important;
+      height: min(92vw, 440px) !important;
+      margin: 0 auto !important;
+    }
+    #colorsColumn {
+      order: 2 !important;
+      width: 94vw !important;
+      max-width: 94vw !important;
+      max-height: 290px !important;
+    }
+    #brushesColumn {
+      order: 3 !important;
+      width: 94vw !important;
+      max-width: 94vw !important;
+      max-height: 310px !important;
+    }
+    .bottom-dashboard {
+      grid-template-columns: 1fr !important;
+      padding: 10px !important;
+    }
+    .artwork-cards {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -294,7 +348,7 @@
 <section class="main-row-arena" id="viewport">
 
   <!-- العمود الأيمن: باليتات الألوان -->
-  <aside class="side-column">
+  <aside class="side-column" id="colorsColumn">
     <div class="card-header">
       <span>🎨 باليتة الألوان</span>
       <div style="display:flex; gap:4px; align-items:center;">
@@ -322,6 +376,8 @@
     </div>
 
     <div class="quick-action-bar">
+      <button type="button" class="dash-btn active-gold" id="toggleColorsBtn" onclick="toggleMobileDrawer('colors')">🎨 إخفاء/إظهار الألوان</button>
+      <button type="button" class="dash-btn active-pink" id="toggleBrushesBtn" onclick="toggleMobileDrawer('brushes')">🖌️ إخفاء/إظهار الفرش</button>
       <button type="button" class="dash-btn" onclick="Studio.undo()">↩️ تراجع</button>
       <button type="button" class="dash-btn active-pink" id="freeModeBtn" onclick="Studio.activateFreeDraw()">🎨 رسم حر</button>
       <button type="button" class="dash-btn active-gold" id="numTapBtn" onclick="Studio.toggleTapFillMode()">🔢 تلوين باللمس: مطفأ</button>
@@ -335,7 +391,7 @@
   </div>
 
   <!-- العمود الأيسر: أنواع الفرش -->
-  <aside class="side-column">
+  <aside class="side-column" id="brushesColumn">
     <div class="card-header">
       <span>🖌️ أنواع الفرش (1040)</span>
       <span id="activeToolBadge" style="font-size:10px; color:var(--accent-cyan);">فرشة مائية</span>
@@ -1653,6 +1709,24 @@ const Studio = {
     }, { passive: false });
   }
 };
+
+
+function toggleMobileDrawer(which) {
+  const col = document.getElementById(which === "colors" ? "colorsColumn" : "brushesColumn");
+  if (!col) return;
+  col.classList.toggle("hidden-drawer");
+  if (!col.classList.contains("hidden-drawer") && window.innerWidth <= 960) {
+    col.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  if (window.innerWidth <= 960) {
+    // على الموبايل: إبقاء الألوان ظاهرة وإخفاء الفرش مؤقتاً لتوسيط اللوحة بوضوح تام، ويمكن إظهارها بضغطة زر
+    const bCol = document.getElementById("brushesColumn");
+    if (bCol) bCol.classList.add("hidden-drawer");
+  }
+});
 
 window.addEventListener('DOMContentLoaded', () => Studio.init());
 </script>
