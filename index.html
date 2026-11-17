@@ -473,7 +473,8 @@
       <button type="button" class="dash-btn" onclick="Studio.resetView()">🎯 توسيط</button>
       <button type="button" class="dash-btn" style="color:#e11d48;" onclick="Studio.clearActiveLayer()">🗑️ مسح</button>
       <button type="button" class="dash-btn active-cyan" id="musicBtn" onclick="ProExtras.toggleRelaxMusic()">🎵 موسيقى هادية: مطفأة</button>
-      <button type="button" class="dash-btn active-gold" onclick="ProExtras.playTimeLapse()">🎬 فيديو خطوات الرسم</button>
+      <button type="button" class="dash-btn active-gold" onclick="ProExtras.playTimeLapse()">🎬 مشاهدة خطوات الرسم</button>
+      <button type="button" class="dash-btn active-pink" id="exportVideoBtn" onclick="ProExtras.exportRealVideo()">📹 تحميل فيديو للمشاركة</button>
       <button type="button" class="dash-btn btn-export" onclick="Studio.exportWithSignature()">🏆 حفظ بتوقيع آسيا</button>
     </div>
   </div>
@@ -1424,6 +1425,7 @@ const ProExtras = {
   musicPlaying: false,
   musicTimer: null,
   audioCtx: null,
+  cachedLineImg: null,
 
   init() {
     this.updateRankUI();
@@ -1446,15 +1448,39 @@ const ProExtras = {
     el.innerText = `🏅 اللقب: ${rank} (${this.xp} نقطة)`;
   },
 
+  // دمج كل الطبقات في صورة مصغرة سريعة وعالية الدقة للفيديو
+  captureCompositeFrame(callback) {
+    const comp = document.createElement("canvas");
+    comp.width = 700;
+    comp.height = 700;
+    const ctx = comp.getContext("2d");
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, 700, 700);
+    Studio.layers.forEach(l => ctx.drawImage(l, 0, 0, 700, 700));
+
+    const inner = document.getElementById("lineArtLayer").innerHTML;
+    if (!inner.trim()) {
+      callback(comp.toDataURL("image/jpeg", 0.85));
+      return;
+    }
+    const fixedSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="700" height="700" viewBox="0 0 700 700">${inner}</svg>`;
+    const img = new Image();
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(fixedSvg);
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, 700, 700);
+      callback(comp.toDataURL("image/jpeg", 0.85));
+    };
+  },
+
   recordFrameAndSave() {
     try {
       const c1 = document.getElementById("layer1");
-      if (!c1) return;
-      const snap = c1.toDataURL("image/png");
-      this.frames.push(snap);
-      if (this.frames.length > 60) this.frames.shift();
-      localStorage.setItem("asia_autosave_layer1", snap);
+      if (c1) localStorage.setItem("asia_autosave_layer1", c1.toDataURL("image/png"));
       this.addXP(5);
+      this.captureCompositeFrame((frameData) => {
+        this.frames.push(frameData);
+        if (this.frames.length > 150) this.frames.shift();
+      });
     } catch (e) {}
   },
 
@@ -1466,23 +1492,29 @@ const ProExtras = {
       if (!c1) return;
       const img = new Image();
       img.src = saved;
-      img.onload = () => {
-        c1.getContext("2d").drawImage(img, 0, 0);
-      };
+      img.onload = () => c1.getContext("2d").drawImage(img, 0, 0);
     } catch (e) {}
   },
 
   playTimeLapse() {
     if (this.frames.length < 2) {
-      alert("لوني شوية الأول يا آسيا عشان أعرضلك فيديو خطوات رسمتك الجميلة 🎨💖");
+      alert("لوني كام خطوة الأول يا آسيا عشان أعرضلك فيديو رسمتك الجميلة 🎨💖");
       return;
     }
-    const c1 = document.getElementById("layer1");
-    const ctx = c1.getContext("2d");
+    // إنشاء طبقة عرض سينمائية مؤقتة فوق اللوحة دون مسح عملها
+    const stack = document.getElementById("canvasStack");
+    const replayCanvas = document.createElement("canvas");
+    replayCanvas.width = 700;
+    replayCanvas.height = 700;
+    replayCanvas.style.cssText = "position:absolute; top:0; left:0; width:100%; height:100%; z-index:80; border-radius:8px;";
+    stack.appendChild(replayCanvas);
+    const ctx = replayCanvas.getContext("2d");
+
     let idx = 0;
     const interval = setInterval(() => {
       if (idx >= this.frames.length) {
         clearInterval(interval);
+        setTimeout(() => replayCanvas.remove(), 1200);
         return;
       }
       const img = new Image();
@@ -1490,9 +1522,72 @@ const ProExtras = {
       img.onload = () => {
         ctx.clearRect(0, 0, 700, 700);
         ctx.drawImage(img, 0, 0);
+        // شريط تقدم أنيق أسفل العرض
+        ctx.fillStyle = "rgba(255, 42, 109, 0.85)";
+        ctx.fillRect(0, 692, ((idx + 1) / this.frames.length) * 700, 8);
       };
       idx++;
-    }, 90);
+    }, 75);
+  },
+
+  // تصدير وتحميل ملف فيديو حقيقي (Time-Lapse Video File) مع كارت توقيع ختامي
+  exportRealVideo() {
+    if (this.frames.length < 2) {
+      alert("ارسمي أو لوني شوية الأول يا آسيا عشان نقدر نصنعلك فيديو من خطواتك 🎬💖");
+      return;
+    }
+    const btn = document.getElementById("exportVideoBtn");
+    if (btn) btn.innerText = "⏳ جاري صناعة الفيديو...";
+
+    const recCanvas = document.createElement("canvas");
+    recCanvas.width = 720;
+    recCanvas.height = 780;
+    const ctx = recCanvas.getContext("2d");
+
+    const stream = recCanvas.captureStream(30);
+    const mimeType = MediaRecorder.isTypeSupported("video/webm;codecs=vp9") ? "video/webm;codecs=vp9" : "video/webm";
+    const recorder = new MediaRecorder(stream, { mimeType });
+    const chunks = [];
+
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: "video/webm" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `Asia-Art-TimeLapse-${Date.now()}.webm`;
+      a.click();
+      if (btn) btn.innerText = "📹 تحميل فيديو للمشاركة";
+      Studio.playTone(880);
+    };
+
+    recorder.start();
+
+    let idx = 0;
+    const drawNext = () => {
+      if (idx < this.frames.length) {
+        const img = new Image();
+        img.src = this.frames[idx];
+        img.onload = () => {
+          ctx.fillStyle = "#151722";
+          ctx.fillRect(0, 0, 720, 780);
+          ctx.drawImage(img, 10, 10, 700, 700);
+          // شريط توقيع ثابت طوال الفيديو
+          ctx.fillStyle = "#ffd700";
+          ctx.font = "bold 22px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillText("👑 استوديو الفنانة آسيا حبيبة بابا مينا 💖", 360, 752);
+          idx++;
+          setTimeout(drawNext, 95);
+        };
+      } else {
+        // كارت ختامي لمدة ثانية ونصف في نهاية الفيديو
+        setTimeout(() => {
+          recorder.stop();
+        }, 1200);
+      }
+    };
+    drawNext();
   },
 
   toggleRelaxMusic() {
@@ -1506,7 +1601,6 @@ const ProExtras = {
     if (btn) btn.innerText = "🎶 موسيقى هادية: شغالة";
     if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (this.audioCtx.state === "suspended") this.audioCtx.resume();
-    // مقطوعة بيانو هادية ومريحة للأعصاب (أكوردات دافئة)
     const melody = [
       [261.63, 329.63], [293.66, 349.23], [329.63, 392.00], [392.00, 493.88],
       [440.00, 523.25], [392.00, 493.88], [329.63, 392.00], [293.66, 349.23]
