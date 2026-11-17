@@ -1460,22 +1460,30 @@ const ProExtras = {
     }
     if (btn) btn.innerText = "🎶 موسيقى هادية: شغالة";
     if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const notes = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25, 392.00, 329.63];
+    if (this.audioCtx.state === "suspended") this.audioCtx.resume();
+    // مقطوعة بيانو هادية ومريحة للأعصاب (أكوردات دافئة)
+    const melody = [
+      [261.63, 329.63], [293.66, 349.23], [329.63, 392.00], [392.00, 493.88],
+      [440.00, 523.25], [392.00, 493.88], [329.63, 392.00], [293.66, 349.23]
+    ];
     let step = 0;
     this.musicTimer = setInterval(() => {
       if (!this.musicPlaying) return;
-      const osc = this.audioCtx.createOscillator();
-      const gain = this.audioCtx.createGain();
-      osc.type = "triangle";
-      osc.frequency.setValueAtTime(notes[step % notes.length], this.audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.03, this.audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 1.1);
-      osc.connect(gain);
-      gain.connect(this.audioCtx.destination);
-      osc.start();
-      osc.stop(this.audioCtx.currentTime + 1.1);
+      const chord = melody[step % melody.length];
+      chord.forEach((freq, i) => {
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+        osc.type = i === 0 ? "sine" : "triangle";
+        osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.025, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 1.4);
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + 1.4);
+      });
       step++;
-    }, 650);
+    }, 750);
   }
 };
 
