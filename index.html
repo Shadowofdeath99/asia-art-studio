@@ -415,6 +415,40 @@
     }
   }
 
+
+  /* الوضع الأساسي الفاتح (الأبيض المشرق) */
+  body.light-theme {
+    --bg-main: #f4f6fb;
+    --bg-panel: #ffffff;
+    --bg-card: #ffffff;
+    --bg-hover: #eef2ff;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --border-subtle: rgba(15, 23, 42, 0.12);
+  }
+  body.light-theme .main-row-arena {
+    background: radial-gradient(circle at center, #ffffff 0%, #e2e8f0 100%) !important;
+  }
+  body.light-theme .canvas-stack {
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.16) !important;
+    border: 2px solid #cbd5e1;
+  }
+  body.light-theme .card-header {
+    color: #b45309 !important;
+  }
+  body.light-theme .edge-tab {
+    background: linear-gradient(135deg, #ffffff, #f1f5f9) !important;
+    color: #0f172a !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.18) !important;
+  }
+  body.light-theme #colorNumInput,
+  body.light-theme #toolSearch,
+  body.light-theme #symmetryMode,
+  body.light-theme #artworkSelector {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+  }
+
 </style>
 </head>
 <body>
@@ -474,6 +508,7 @@
     <div class="quick-action-bar">
       <button type="button" class="dash-btn active-gold" id="toggleColorsBtn" onclick="toggleEdgeDock('colors')">🎨 إخفاء/إظهار الألوان</button>
       <button type="button" class="dash-btn active-pink" id="toggleBrushesBtn" onclick="toggleEdgeDock('brushes')">🖌️ إخفاء/إظهار الفرش</button>
+      <button type="button" class="dash-btn" id="themeToggleBtn" onclick="toggleManualTheme()">☀️ المظهر: أبيض (ليلي 10م)</button>
       <button type="button" class="dash-btn" onclick="Studio.undo()">↩️ تراجع</button>
       <button type="button" class="dash-btn active-pink" id="freeModeBtn" onclick="Studio.activateFreeDraw()">🎨 رسم حر</button>
       <button type="button" class="dash-btn active-gold" id="numTapBtn" onclick="Studio.toggleTapFillMode()">🔢 تلوين باللمس: مطفأ</button>
@@ -1862,6 +1897,40 @@ window.addEventListener("DOMContentLoaded", () => {
     const bCol = document.getElementById("brushesColumn");
     if (bCol) bCol.classList.add("hidden-drawer");
   }
+});
+
+
+let manualThemeOverride = null;
+
+function applySmartTheme(isDark) {
+  const btn = document.getElementById("themeToggleBtn");
+  if (isDark) {
+    document.body.classList.remove("light-theme");
+    if (btn) btn.innerText = "🌙 المظهر: ليلي مظلم";
+  } else {
+    document.body.classList.add("light-theme");
+    if (btn) btn.innerText = "☀️ المظهر: أبيض مشرق";
+  }
+}
+
+function checkTimeBasedTheme() {
+  if (manualThemeOverride !== null) return;
+  const now = new Date();
+  const hour = now.getHours();
+  // الوضع الأساسي أبيض من 6 صباحاً حتى 9:59 مساءً، ومن 10 مساءً (22) حتى 5:59 صباحاً يتحول لمظلم تلقائياً
+  const isNightTime = (hour >= 22 || hour < 6);
+  applySmartTheme(isNightTime);
+}
+
+function toggleManualTheme() {
+  const currentlyLight = document.body.classList.contains("light-theme");
+  manualThemeOverride = currentlyLight ? "dark" : "light";
+  applySmartTheme(currentlyLight);
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  checkTimeBasedTheme();
+  setInterval(checkTimeBasedTheme, 30000); // فحص الساعة كل 30 ثانية للتحول التلقائي عند 10:00 مساءً تماماً
 });
 
 window.addEventListener('DOMContentLoaded', () => Studio.init());
