@@ -1815,6 +1815,7 @@ function factoryResetStudio() {
   // مسح الحفظ المؤقت
   localStorage.removeItem("asia_autosave_layer1");
   localStorage.removeItem("asia_full_autosave_v3");
+  if (typeof AutoSave3Sec !== "undefined") AutoSave3Sec.clearSavedDB();
   if (typeof ProExtras !== "undefined") {
     ProExtras.frames = [];
     if (ProExtras.musicPlaying) ProExtras.toggleRelaxMusic();
@@ -2252,45 +2253,100 @@ const BabaVoiceStudio = {
 
 
 const AutoSave3Sec = {
+  dbName: "AsiaArtStudioDB",
+  storeName: "canvasState",
   lastHash: "",
 
-  init() {
-    this.restoreAll();
-    // فحص وحفظ تلقائي كل 3 ثوانٍ (3000 مللي ثانية) إذا كان هناك تغيير ويدها ليست ضاغطة حالياً
-    setInterval(() => {
-      if (Studio.isDrawing) return;
-      this.saveNow();
-    }, 3000);
+  openDB() {
+    return new Promise((resolve, reject) => {
+      const req = indexedDB.open(this.dbName, 1);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains(this.storeName)) {
+          db.createObjectStore(this.storeName);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
   },
 
-  saveNow() {
+  async init() {
+    await this.restoreAll();
+
+    // حفظ دوري كل 3 ثوانٍ
+    setInterval(() => {
+      if (!Studio.isDrawing) this.saveNow();
+    }, 3000);
+
+    // حفظ فوري لحظة الضغط على Refresh أو الخروج من الصفحة
+    window.addEventListener("beforeunload", () => this.saveNow(true));
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") this.saveNow(true);
+    });
+  },
+
+  async saveNow(force = false) {
     try {
       const artId = document.getElementById("artworkSelector")?.value || "farm";
+      const customSvg = document.getElementById("lineArtLayer")?.innerHTML || "";
       const layersData = Studio.layers.map(c => c.toDataURL("image/png"));
-      const payload = JSON.stringify({ artId, layersData });
+      const stateObj = { artId, customSvg, layersData, activeIdx: Studio.activeLayerIdx };
+      const checkStr = artId + "_" + layersData.join("").length + "_" + customSvg.length;
 
-      if (payload === this.lastHash) return;
-      localStorage.setItem("asia_full_autosave_v3", payload);
-      this.lastHash = payload;
+      if (!force && checkStr === this.lastHash) return;
+      this.lastHash = checkStr;
+
+      // حفظ في IndexedDB (سعة ضخمة تتحمل كل الطبقات والصور بعد الرفرش)
+      const db = await this.openDB();
+      const tx = db.transaction(this.storeName, "readwrite");
+      tx.objectStore(this.storeName).put(stateObj, "latest_artwork");
+
+      // نسخة احتياطية سريعة في localStorage أيضاً
+      try { localStorage.setItem("asia_full_autosave_v3", JSON.stringify(stateObj)); } catch (e) {}
 
       const badge = document.getElementById("autoSaveBadge");
       if (badge) {
-        badge.innerText = "💾 تم الحفظ تلقائياً ✓";
-        setTimeout(() => { if (badge) badge.innerText = "💾 حفظ تلقائي (3ث)"; }, 1200);
+        badge.innerText = "💾 محفوظ (حتى مع الرفرش) ✓";
+        setTimeout(() => { if (badge) badge.innerText = "💾 حفظ تلقائي (3ث)"; }, 1400);
       }
     } catch (e) {}
   },
 
-  restoreAll() {
+  async restoreAll() {
     try {
-      const raw = localStorage.getItem("asia_full_autosave_v3");
-      if (!raw) return;
-      const saved = JSON.parse(raw);
+      let saved = null;
+      try {
+        const db = await this.openDB();
+        saved = await new Promise((resolve) => {
+          const tx = db.transaction(this.storeName, "readonly");
+          const req = tx.objectStore(this.storeName).get("latest_artwork");
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        });
+      } catch (e) {}
+
+      if (!saved) {
+        const raw = localStorage.getItem("asia_full_autosave_v3");
+        if (raw) saved = JSON.parse(raw);
+      }
+      if (!saved) return;
+
       if (saved.artId) {
         const sel = document.getElementById("artworkSelector");
         if (sel) sel.value = saved.artId;
         Studio.loadArtwork(saved.artId);
       }
+
+      // استعادة الخطوط أو الصورة المستوردة من الجهاز بعد الرفرش
+      if (saved.customSvg && saved.customSvg.trim()) {
+        const svgEl = document.getElementById("lineArtLayer");
+        if (svgEl) {
+          svgEl.innerHTML = saved.customSvg;
+          Studio.buildLineShieldFromSVG();
+        }
+      }
+
       if (Array.isArray(saved.layersData)) {
         while (Studio.layers.length < saved.layersData.length) {
           Studio.addLayer();
@@ -2306,8 +2362,19 @@ const AutoSave3Sec = {
             ctx.drawImage(img, 0, 0);
           };
         });
-        this.lastHash = raw;
+        if (typeof saved.activeIdx === "number") {
+          Studio.activeLayerIdx = saved.activeIdx;
+          Studio.renderLayersUI();
+        }
       }
+    } catch (e) {}
+  },
+
+  async clearSavedDB() {
+    try {
+      const db = await this.openDB();
+      const tx = db.transaction(this.storeName, "readwrite");
+      tx.objectStore(this.storeName).delete("latest_artwork");
     } catch (e) {}
   }
 };
