@@ -2133,14 +2133,14 @@ const BabaVoiceStudio = {
   welcomePlayed: false,
 
   init() {
-    // التحقق من وجود تسجيل ترحيب (سواء مرفوع كملف welcome.webm أو محفوظ محلياً)
+    // التحقق من وجود تسجيل ترحيب (سواء مرفوع كملف welcome.mp3 أو محفوظ محلياً)
     const localWelcome = localStorage.getItem("baba_voice_welcome");
     const card = document.getElementById("welcomeVoiceCard");
 
     if (localWelcome) {
       if (card) card.style.display = "flex";
     } else {
-      fetch("welcome.webm", { method: "HEAD" }).then(res => {
+      fetch("welcome.mp3", { method: "HEAD" }).then(res => {
         if (res.ok && card) card.style.display = "flex";
       }).catch(() => {});
     }
@@ -2303,7 +2303,7 @@ window.addEventListener("DOMContentLoaded", () => {
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
         <button type="button" class="dash-btn active-pink" id="recBtn_welcome" onclick="BabaVoiceStudio.toggleRecord('welcome')">🔴 ابدأ التسجيل</button>
         <button type="button" class="dash-btn active-mint" onclick="BabaVoiceStudio.playWelcome()">▶️ سماع</button>
-        <button type="button" class="dash-btn active-gold" onclick="BabaVoiceStudio.downloadAudio('welcome')">⬇️ تحميل ملف welcome.webm</button>
+        <button type="button" class="dash-btn active-gold" onclick="BabaVoiceStudio.downloadAudio('welcome')">⬇️ تحميل ملف welcome.mp3</button>
       </div>
       <div id="status_welcome" style="font-size:11px; color:var(--text-secondary);">جاهز للتسجيل من المايكروفون...</div>
     </div>
@@ -2313,13 +2313,13 @@ window.addEventListener("DOMContentLoaded", () => {
       <div style="display:flex; gap:6px; flex-wrap:wrap;">
         <button type="button" class="dash-btn active-pink" id="recBtn_goodbye" onclick="BabaVoiceStudio.toggleRecord('goodbye')">🔴 ابدأ التسجيل</button>
         <button type="button" class="dash-btn active-mint" onclick="BabaVoiceStudio.playGoodbye()">▶️ سماع</button>
-        <button type="button" class="dash-btn active-gold" onclick="BabaVoiceStudio.downloadAudio('goodbye')">⬇️ تحميل ملف goodbye.webm</button>
+        <button type="button" class="dash-btn active-gold" onclick="BabaVoiceStudio.downloadAudio('goodbye')">⬇️ تحميل ملف bye.mp3</button>
       </div>
       <div id="status_goodbye" style="font-size:11px; color:var(--text-secondary);">جاهز للتسجيل من المايكروفون...</div>
     </div>
 
     <div style="font-size:12px; line-height:1.6; background:rgba(255,215,0,0.1); padding:10px; border-radius:8px; border:1px dashed var(--accent-gold);">
-      💡 <strong>ملاحظة هامة للنشر أونلاين:</strong> التسجيل بيشتغل فوراً على جهازك؛ وعشان يشتغل لآسيا على موبايلها من رابط GitHub، اضغط على زرار <strong>«⬇️ تحميل ملف»</strong> لكل رسالة، وحط الملفين <code>welcome.webm</code> و <code>goodbye.webm</code> جوه مجلد <code>~/ProColorStudio</code> وارفعهم بـ <code>git push</code>!
+      💡 <strong>ملاحظة هامة للنشر أونلاين:</strong> التسجيل بيشتغل فوراً على جهازك؛ وعشان يشتغل لآسيا على موبايلها من رابط GitHub، اضغط على زرار <strong>«⬇️ تحميل ملف»</strong> لكل رسالة، وحط الملفين <code>welcome.mp3</code> و <code>bye.mp3</code> جوه مجلد <code>~/ProColorStudio</code> وارفعهم بـ <code>git push</code>!
     </div>
   </div>
 </div>
