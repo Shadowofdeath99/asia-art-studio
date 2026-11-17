@@ -472,6 +472,7 @@
       <button type="button" class="dash-btn" onclick="Studio.adjustZoom(-0.15)">➖</button>
       <button type="button" class="dash-btn" onclick="Studio.resetView()">🎯 توسيط</button>
       <button type="button" class="dash-btn" style="color:#e11d48;" onclick="Studio.clearActiveLayer()">🗑️ مسح</button>
+      <button type="button" class="dash-btn" style="border-color:#f97316; color:#f97316;" onclick="factoryResetStudio()">🔄 وضع المصنع</button>
       <button type="button" class="dash-btn active-cyan" id="musicBtn" onclick="ProExtras.toggleRelaxMusic()">🎵 موسيقى هادية: مطفأة</button>
       <button type="button" class="dash-btn active-gold" onclick="ProExtras.playTimeLapse()">🎬 مشاهدة خطوات الرسم</button>
       <button type="button" class="dash-btn active-pink" id="exportVideoBtn" onclick="ProExtras.exportRealVideo()">📹 تحميل فيديو للمشاركة</button>
@@ -1654,6 +1655,48 @@ const BabaKissTimer = {
     }, 5500);
   }
 };
+
+
+function factoryResetStudio() {
+  const confirmed = confirm("يا آسيا، هل متأكدة إنك عاوزة ترجعي الاستوديو لوضع المصنع وتبدأي لوحة نظيفة من الأول؟ 🎨🔄");
+  if (!confirmed) return;
+
+  // مسح الحفظ المؤقت
+  localStorage.removeItem("asia_autosave_layer1");
+  if (typeof ProExtras !== "undefined") {
+    ProExtras.frames = [];
+    if (ProExtras.musicPlaying) ProExtras.toggleRelaxMusic();
+  }
+
+  // إعادة ضبط المظهر حسب الساعة (أبيض نهاراً / مظلم 10م)
+  manualThemeOverride = null;
+  checkTimeBasedTheme();
+
+  // إعادة ضبط الألوان والفرش والحدود والتكبير
+  Studio.setColor("#ff0000");
+  document.getElementById("colorNumInput").value = "1";
+  Studio.size = 14;
+  document.getElementById("brushSize").value = "14";
+  document.getElementById("sizeVal").innerText = "14";
+  Studio.opacity = 1;
+  document.getElementById("brushOpacity").value = "100";
+  Studio.symmetry = 1;
+  document.getElementById("symmetryMode").value = "1";
+  Studio.resetView();
+
+  Studio.smartLock = true;
+  document.getElementById("smartLockBtn").innerText = "🔒 قفل الحدود: شغال";
+  Studio.tapFillMode = false;
+  document.getElementById("numTapBtn").innerText = "🔢 تلوين باللمس: مطفأ";
+
+  // مسح كل الطبقات وتحميل اللوحة الأولى نظيفة
+  Studio.layers.forEach(l => l.getContext("2d").clearRect(0, 0, 700, 700));
+  document.getElementById("artworkSelector").value = "farm";
+  Studio.loadArtwork("farm");
+  Studio.history = [];
+  Studio.saveHistory();
+  Studio.playTone(700);
+}
 
 window.addEventListener("DOMContentLoaded", () => {
   BabaKissTimer.init();
