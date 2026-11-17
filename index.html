@@ -2130,125 +2130,59 @@ const Stage2Pro = {
 
 
 const BabaVoiceStudio = {
-  mediaRecorder: null,
-  chunks: [],
-  activeType: null,
   welcomePlayed: false,
 
   init() {
-    // التحقق من وجود تسجيل ترحيب (سواء مرفوع كملف welcome.mp3 أو محفوظ محلياً)
-    const localWelcome = localStorage.getItem("baba_voice_welcome");
+    // تنظيف أي تسجيلات تجريبية قديمة من ذاكرة المتصفح حتى يعمل الملف الأصلي المرفوع
+    localStorage.removeItem("baba_voice_welcome");
+    localStorage.removeItem("baba_voice_goodbye");
+
     const card = document.getElementById("welcomeVoiceCard");
+    if (card) card.style.display = "flex";
 
-    if (localWelcome) {
-      if (card) card.style.display = "flex";
-    } else {
-      fetch("welcome.mp3", { method: "HEAD" }).then(res => {
-        if (res.ok && card) card.style.display = "flex";
-      }).catch(() => {});
-    }
-
-    // محاولة تشغيل الترحيب تلقائياً مع أول تفاعل لآسيا في الصفحة
-    const autoTriggerOnce = () => {
-      if (!this.welcomePlayed && card && card.style.display === "flex") {
+    // تشغيل الترحيب فور أول لمسة في أي مكان بالصفحة أو على بطاقة الترحيب
+    const unlockAndPlay = () => {
+      if (!this.welcomePlayed) {
         this.playWelcome();
       }
-      window.removeEventListener("pointerdown", autoTriggerOnce);
+      window.removeEventListener("pointerdown", unlockAndPlay);
+      window.removeEventListener("touchstart", unlockAndPlay);
+      window.removeEventListener("click", unlockAndPlay);
     };
-    window.addEventListener("pointerdown", autoTriggerOnce);
 
-    // عند محاولة إغلاق الصفحة أو الخروج منها
-    window.addEventListener("beforeunload", (e) => {
-      const hasGoodbye = localStorage.getItem("baba_voice_goodbye");
-      if (hasGoodbye) {
-        this.playGoodbye();
-      }
+    window.addEventListener("pointerdown", unlockAndPlay);
+    window.addEventListener("touchstart", unlockAndPlay, { passive: true });
+    window.addEventListener("click", unlockAndPlay);
+  },
+
+  playWelcome() {
+    const audio = document.getElementById("audioWelcomeEl");
+    const card = document.getElementById("welcomeVoiceCard");
+    if (!audio) return;
+
+    audio.currentTime = 0;
+    audio.play().then(() => {
+      this.welcomePlayed = true;
+      if (card) card.style.display = "none";
+    }).catch((err) => {
+      console.warn("في انتظار لمسة لتشغيل الصوت:", err);
+    });
+  },
+
+  playGoodbye() {
+    const audio = document.getElementById("audioByeEl");
+    if (!audio) return;
+    audio.currentTime = 0;
+    audio.play().catch((err) => {
+      alert("اضغطي موافق لسماع رسالة وداع بابا مينا 💖");
+      audio.play();
     });
   },
 
   openRecorder() {
-    document.getElementById("babaRecorderModal").classList.add("open");
+    alert("رسائل بابا مينا الصوتية (welcome.mp3 و bye.mp3) مرفوعة ومفعّلة حالياً على السيرفر 💖🎙️");
   },
-
-  closeRecorder() {
-    document.getElementById("babaRecorderModal").classList.remove("open");
-  },
-
-  async toggleRecord(type) {
-    const btn = document.getElementById(`recBtn_${type}`);
-    const status = document.getElementById(`status_${type}`);
-
-    if (this.mediaRecorder && this.mediaRecorder.state === "recording") {
-      this.mediaRecorder.stop();
-      btn.innerText = "🔴 ابدأ التسجيل";
-      status.innerText = "⏳ جاري حفظ الصوت...";
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      this.chunks = [];
-      this.activeType = type;
-      this.mediaRecorder = new MediaRecorder(stream);
-
-      this.mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) this.chunks.push(e.data);
-      };
-
-      this.mediaRecorder.onstop = () => {
-        const blob = new Blob(this.chunks, { type: "audio/webm" });
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          localStorage.setItem(`baba_voice_${type}`, reader.result);
-          status.innerText = "✅ تم حفظ التسجيل بنجاح! اضغطي سماع للتجربة.";
-          if (type === "welcome") {
-            const card = document.getElementById("welcomeVoiceCard");
-            if (card) card.style.display = "flex";
-          }
-        };
-        reader.readAsDataURL(blob);
-        stream.getTracks().forEach(t => t.stop());
-      };
-
-      this.mediaRecorder.start();
-      btn.innerText = "⏹️ إيقاف وحفظ";
-      status.innerText = "🎙️ جاري التسجيل الآن... اتكلم يا بابا مينا ❤️";
-    } catch (err) {
-      alert("من فضلك اسمح للمتصفح باستخدام المايكروفون لتسجيل صوتك 🎙️");
-    }
-  },
-
-  getAudioSource(type) {
-    const localData = localStorage.getItem(`baba_voice_${type}`);
-    return localData ? localData : `${type}.webm`;
-  },
-
-  playWelcome() {
-    this.welcomePlayed = true;
-    const card = document.getElementById("welcomeVoiceCard");
-    if (card) card.style.display = "none";
-    const audio = new Audio(this.getAudioSource("welcome"));
-    audio.play().catch(() => {});
-  },
-
-  playGoodbye() {
-    const audio = new Audio(this.getAudioSource("goodbye"));
-    audio.play().catch(() => {
-      alert("سجّل رسالة الوداع الأول من زرار 🎙️ تسجيل صوت بابا");
-    });
-  },
-
-  downloadAudio(type) {
-    const dataUrl = localStorage.getItem(`baba_voice_${type}`);
-    if (!dataUrl) {
-      alert("سجّل الصوت الأول قبل التحميل 🎙️");
-      return;
-    }
-    const a = document.createElement("a");
-    a.href = dataUrl;
-    a.download = `${type}.webm`;
-    a.click();
-  }
+  closeRecorder() {}
 };
 
 
@@ -2457,5 +2391,7 @@ window.addEventListener("DOMContentLoaded", () => {
   </div>
 </div>
 
+<audio id="audioWelcomeEl" src="welcome.mp3" preload="auto"></audio>
+<audio id="audioByeEl" src="bye.mp3" preload="auto"></audio>
 </body>
 </html>
