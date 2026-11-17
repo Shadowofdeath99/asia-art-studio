@@ -616,6 +616,7 @@
       <button type="button" class="dash-btn" onclick="Studio.resetView()">🎯 توسيط</button>
       <button type="button" class="dash-btn" style="color:#e11d48;" onclick="Studio.clearActiveLayer()">🗑️ مسح</button>
       <button type="button" class="dash-btn" style="border-color:#f97316; color:#f97316;" onclick="factoryResetStudio()">🔄 وضع المصنع</button>
+      <span id="autoSaveBadge" style="font-size:11px; color:var(--accent-mint); font-weight:700; padding:4px 8px;">💾 حفظ تلقائي: جاهز</span>
       <button type="button" class="dash-btn active-cyan" id="musicBtn" onclick="ProExtras.toggleRelaxMusic()">🎵 موسيقى هادية: مطفأة</button>
       <button type="button" class="dash-btn active-gold" onclick="ProExtras.playTimeLapse()">🎬 مشاهدة خطوات الرسم</button>
       <button type="button" class="dash-btn active-pink" id="exportVideoBtn" onclick="ProExtras.exportRealVideo()">📹 تحميل فيديو للمشاركة</button>
@@ -1813,6 +1814,7 @@ function factoryResetStudio() {
 
   // مسح الحفظ المؤقت
   localStorage.removeItem("asia_autosave_layer1");
+  localStorage.removeItem("asia_full_autosave_v3");
   if (typeof ProExtras !== "undefined") {
     ProExtras.frames = [];
     if (ProExtras.musicPlaying) ProExtras.toggleRelaxMusic();
@@ -2248,7 +2250,71 @@ const BabaVoiceStudio = {
   }
 };
 
+
+const AutoSave3Sec = {
+  lastHash: "",
+
+  init() {
+    this.restoreAll();
+    // فحص وحفظ تلقائي كل 3 ثوانٍ (3000 مللي ثانية) إذا كان هناك تغيير ويدها ليست ضاغطة حالياً
+    setInterval(() => {
+      if (Studio.isDrawing) return;
+      this.saveNow();
+    }, 3000);
+  },
+
+  saveNow() {
+    try {
+      const artId = document.getElementById("artworkSelector")?.value || "farm";
+      const layersData = Studio.layers.map(c => c.toDataURL("image/png"));
+      const payload = JSON.stringify({ artId, layersData });
+
+      if (payload === this.lastHash) return;
+      localStorage.setItem("asia_full_autosave_v3", payload);
+      this.lastHash = payload;
+
+      const badge = document.getElementById("autoSaveBadge");
+      if (badge) {
+        badge.innerText = "💾 تم الحفظ تلقائياً ✓";
+        setTimeout(() => { if (badge) badge.innerText = "💾 حفظ تلقائي (3ث)"; }, 1200);
+      }
+    } catch (e) {}
+  },
+
+  restoreAll() {
+    try {
+      const raw = localStorage.getItem("asia_full_autosave_v3");
+      if (!raw) return;
+      const saved = JSON.parse(raw);
+      if (saved.artId) {
+        const sel = document.getElementById("artworkSelector");
+        if (sel) sel.value = saved.artId;
+        Studio.loadArtwork(saved.artId);
+      }
+      if (Array.isArray(saved.layersData)) {
+        while (Studio.layers.length < saved.layersData.length) {
+          Studio.addLayer();
+        }
+        saved.layersData.forEach((dataUrl, idx) => {
+          const canvas = Studio.layers[idx];
+          if (!canvas || !dataUrl) return;
+          const img = new Image();
+          img.src = dataUrl;
+          img.onload = () => {
+            const ctx = canvas.getContext("2d");
+            ctx.clearRect(0, 0, 700, 700);
+            ctx.drawImage(img, 0, 0);
+          };
+        });
+        this.lastHash = raw;
+      }
+    } catch (e) {}
+  }
+};
+
 window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => AutoSave3Sec.init(), 120);
+
   BabaVoiceStudio.init();
   Stage2Pro.init();
   BabaKissTimer.init();
