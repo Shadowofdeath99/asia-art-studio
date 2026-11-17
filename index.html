@@ -2131,28 +2131,51 @@ const Stage2Pro = {
 
 const BabaVoiceStudio = {
   welcomePlayed: false,
+  audioUnlocked: false,
 
   init() {
-    // تنظيف أي تسجيلات تجريبية قديمة من ذاكرة المتصفح حتى يعمل الملف الأصلي المرفوع
     localStorage.removeItem("baba_voice_welcome");
     localStorage.removeItem("baba_voice_goodbye");
+
+    const wAudio = document.getElementById("audioWelcomeEl");
+    const bAudio = document.getElementById("audioByeEl");
+    if (wAudio) { wAudio.volume = 1.0; wAudio.load(); }
+    if (bAudio) { bAudio.volume = 1.0; bAudio.load(); }
 
     const card = document.getElementById("welcomeVoiceCard");
     if (card) card.style.display = "flex";
 
-    // تشغيل الترحيب فور أول لمسة في أي مكان بالصفحة أو على بطاقة الترحيب
+    // التقاط أول لمسة في أي نقطة بالشاشة (capture: true يسبق اللوحة وأي زر)
     const unlockAndPlay = () => {
+      if (!this.audioUnlocked && bAudio) {
+        // تهيئة صامتة لملف الوداع ليكون جاهزاً للعمل في أي لحظة
+        bAudio.muted = true;
+        bAudio.play().then(() => {
+          bAudio.pause();
+          bAudio.currentTime = 0;
+          bAudio.muted = false;
+          this.audioUnlocked = true;
+        }).catch(() => {});
+      }
+
       if (!this.welcomePlayed) {
         this.playWelcome();
       }
-      window.removeEventListener("pointerdown", unlockAndPlay);
-      window.removeEventListener("touchstart", unlockAndPlay);
-      window.removeEventListener("click", unlockAndPlay);
     };
 
-    window.addEventListener("pointerdown", unlockAndPlay);
-    window.addEventListener("touchstart", unlockAndPlay, { passive: true });
-    window.addEventListener("click", unlockAndPlay);
+    window.addEventListener("pointerdown", unlockAndPlay, { capture: true });
+    window.addEventListener("touchstart", unlockAndPlay, { capture: true, passive: true });
+    window.addEventListener("keydown", unlockAndPlay, { capture: true });
+
+    // تشغيل رسالة الوداع تلقائياً بمجرد خروج آسيا من التطبيق أو تصغيره (Home / Switch App)
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden" && this.audioUnlocked) {
+        this.playGoodbye(true);
+      }
+    });
+    window.addEventListener("pagehide", () => {
+      if (this.audioUnlocked) this.playGoodbye(true);
+    });
   },
 
   playWelcome() {
@@ -2160,27 +2183,36 @@ const BabaVoiceStudio = {
     const card = document.getElementById("welcomeVoiceCard");
     if (!audio) return;
 
+    audio.muted = false;
+    audio.volume = 1.0;
     audio.currentTime = 0;
     audio.play().then(() => {
       this.welcomePlayed = true;
       if (card) card.style.display = "none";
     }).catch((err) => {
-      console.warn("في انتظار لمسة لتشغيل الصوت:", err);
+      console.error("Audio play blocked:", err);
     });
   },
 
-  playGoodbye() {
+  playGoodbye(silentFallback = false) {
     const audio = document.getElementById("audioByeEl");
     if (!audio) return;
+    audio.muted = false;
+    audio.volume = 1.0;
     audio.currentTime = 0;
     audio.play().catch((err) => {
-      alert("اضغطي موافق لسماع رسالة وداع بابا مينا 💖");
-      audio.play();
+      if (!silentFallback) {
+        alert("اضغطي موافق لسماع رسالة وداع بابا مينا 💖");
+        audio.play();
+      }
     });
   },
 
   openRecorder() {
-    alert("رسائل بابا مينا الصوتية (welcome.mp3 و bye.mp3) مرفوعة ومفعّلة حالياً على السيرفر 💖🎙️");
+    // زر اختبار مباشر لسماع الترحيب والوداع والتأكد من عملهم فوراً
+    const choice = confirm("اضغط (موافق / OK) لسماع رسالة الترحيب الآن، أو (إلغاء / Cancel) لسماع رسالة الوداع 🎙️");
+    if (choice) this.playWelcome();
+    else this.playGoodbye();
   },
   closeRecorder() {}
 };
@@ -2391,7 +2423,7 @@ window.addEventListener("DOMContentLoaded", () => {
   </div>
 </div>
 
-<audio id="audioWelcomeEl" src="welcome.mp3" preload="auto"></audio>
-<audio id="audioByeEl" src="bye.mp3" preload="auto"></audio>
+<audio id="audioWelcomeEl" src="welcome.mp3?v=1794935370" preload="auto"></audio>
+<audio id="audioByeEl" src="bye.mp3?v=1794935370" preload="auto"></audio>
 </body>
 </html>
