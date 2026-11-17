@@ -1,0 +1,1679 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>👑 استوديو آسيا حبيبة بابا مينا | عالم الفن والإبداع</title>
+<style>
+  :root {
+    --bg-main: #0b0c10;
+    --bg-panel: #141620;
+    --bg-card: #1c1f2e;
+    --bg-hover: #272b3f;
+    --accent-cyan: #00e5ff;
+    --accent-pink: #ff2a6d;
+    --accent-gold: #ffd700;
+    --accent-mint: #00ff88;
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --border-subtle: rgba(255, 255, 255, 0.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, system-ui, sans-serif; }
+  body { background: var(--bg-main); color: var(--text-primary); overflow-x: auto; overflow-y: auto; }
+
+  /* 1. شريط رسالة بابا مينا والحكم في الأعلى */
+  .asia-banner {
+    background: linear-gradient(90deg, #2b113d 0%, #142844 50%, #2b113d 100%);
+    border-bottom: 2px solid rgba(255, 215, 0, 0.55);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 23px;
+    line-height: 1.5;
+    color: #ffe8f3;
+    text-align: center;
+  }
+  .asia-banner .badge {
+    background: rgba(255, 215, 0, 0.18);
+    border: 1px solid var(--accent-gold);
+    color: var(--accent-gold);
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-weight: 800;
+    font-size: 17px;
+  }
+  #asiaQuote { transition: opacity 0.35s ease; font-weight: 600; }
+
+  /* 2. صف ثلاثي إجباري بجانب بعض: يمين (ألوان) | وسط (رسمة) | يسار (فرش) */
+  .main-row-arena {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    background: radial-gradient(circle at center, #1b1e2b 0%, #090a0e 100%);
+    border-bottom: 2px solid var(--border-subtle);
+    width: 100%;
+  }
+
+  .side-column {
+    width: 265px;
+    min-width: 240px;
+    max-width: 280px;
+    flex-shrink: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 750px;
+    overflow-y: auto;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+  }
+
+  .center-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-width: 340px;
+  }
+
+  .canvas-stack {
+    position: relative;
+    width: 660px;
+    height: 660px;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+    touch-action: none;
+  }
+  .canvas-stack canvas, .canvas-stack svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+  #lineArtLayer {
+    pointer-events: none;
+    z-index: 50;
+    mix-blend-mode: multiply;
+  }
+
+  @media (max-width: 1320px) {
+    .canvas-stack { width: 520px; height: 520px; }
+  }
+  @media (max-width: 1080px) {
+    .canvas-stack { width: 400px; height: 400px; }
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent-gold);
+    border-bottom: 1px solid var(--border-subtle);
+    padding-bottom: 6px;
+  }
+
+  .dash-btn {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    transition: 0.15s;
+  }
+  .dash-btn:hover { background: var(--bg-hover); border-color: var(--accent-cyan); }
+  .dash-btn.active-pink { border-color: var(--accent-pink); color: #ff85a8; background: rgba(255,42,109,0.15); }
+  .dash-btn.active-gold { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(255,215,0,0.15); }
+  .dash-btn.active-mint { border-color: var(--accent-mint); color: var(--accent-mint); background: rgba(0,255,136,0.15); }
+  .dash-btn.btn-export { background: linear-gradient(135deg, #00b4d8, #0077b6); border: none; color: #fff; }
+
+  .quick-action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    background: var(--bg-panel);
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+  }
+
+  /* شبكة الـ 50 لون على اليمين */
+  .num-palette {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 5px;
+  }
+  .num-swatch {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid rgba(255,255,255,0.25);
+    transition: transform 0.12s;
+  }
+  .num-swatch:hover, .num-swatch.active {
+    transform: scale(1.15);
+    border-color: #ffffff;
+    box-shadow: 0 0 10px #ffd700;
+    z-index: 5;
+  }
+
+  /* شبكة الفرش على اليسار */
+  .category-tabs {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .cat-tab {
+    padding: 4px 8px;
+    background: var(--bg-panel);
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .cat-tab.active { background: var(--accent-cyan); color: #000; }
+
+  .tools-grid {
+    max-height: 460px;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  .tool-item {
+    background: var(--bg-panel);
+    border: 1px solid transparent;
+    border-radius: 8px;
+    padding: 7px 4px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 11px;
+    color: var(--text-secondary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .tool-item.active {
+    border-color: var(--accent-cyan);
+    background: rgba(0, 229, 255, 0.14);
+    color: #fff;
+  }
+
+  /* القسم السفلي للوحات والطبقات */
+  .bottom-dashboard {
+    max-width: 1360px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 14px;
+  }
+  .dash-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .artwork-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .art-card-btn {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: 9px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+  }
+  .art-card-btn.active { border-color: var(--accent-pink); background: rgba(255,42,109,0.16); }
+  .layer-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px;
+    background: var(--bg-panel);
+    border-radius: 7px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid transparent;
+  }
+  .layer-item.active { border-color: var(--accent-cyan); }
+</style>
+</head>
+<body>
+
+<!-- 1. رسالة بابا مينا في القمة -->
+<div class="asia-banner" id="asiaBanner">
+  <span class="badge">💖 من بابا مينا لـ آسيا</span>
+  <span id="asiaQuote">يا آسيا يا أغلى بنوتة في الدنيا، بابا مينا فخور بيكي.. ابدعي وارسمي وذاكري عشان تبقي أنجح بنوتة في العالم 👑✨</span>
+  <button type="button" class="dash-btn active-gold" style="padding:4px 10px; font-size:12px;" onclick="nextBabaWisdom()">💌 التالي (رسالة / حكمة)</button>
+</div>
+
+<!-- 2. الساحة الثلاثية: يمين (الألوان) | وسط (الرسمة) | يسار (الفرش) -->
+<section class="main-row-arena" id="viewport">
+
+  <!-- العمود الأيمن: باليتات الألوان -->
+  <aside class="side-column">
+    <div class="card-header">
+      <span>🎨 باليتة الألوان</span>
+      <div style="display:flex; gap:4px; align-items:center;">
+        <span id="currentColorPreview" style="width:20px; height:20px; border-radius:50%; background:#ff0000; border:2px solid #fff; display:inline-block;"></span>
+        <input type="number" id="colorNumInput" min="1" max="50" value="1" style="width:48px; background:#0b0c10; border:1px solid var(--accent-gold); color:#fff; border-radius:5px; padding:2px; font-size:11px; text-align:center;">
+        <input type="color" id="colorPicker" value="#ff0000" style="width:26px; height:24px; border:none; background:none; cursor:pointer;">
+      </div>
+    </div>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:4px;">
+      <button type="button" class="dash-btn" onclick="Studio.switchPaletteMode('fifty')">🔢 الـ 50 لون</button>
+      <button type="button" class="dash-btn" onclick="Studio.switchPaletteMode('pastel')">🍬 باستيل</button>
+      <button type="button" class="dash-btn" onclick="Studio.switchPaletteMode('royal')">👗 فساتين</button>
+      <button type="button" class="dash-btn" onclick="Studio.switchPaletteMode('nature')">🌿 مزرعة</button>
+    </div>
+    <div class="num-palette" id="numPaletteGrid"></div>
+    <div id="paletteGrid" style="display:none;"></div>
+  </aside>
+
+  <!-- المنتصف: الرسمة وأزرار التحكم -->
+  <div class="center-column">
+    <div class="canvas-stack" id="canvasStack">
+      <canvas id="layer0" width="700" height="700"></canvas>
+      <canvas id="layer1" width="700" height="700"></canvas>
+      <svg id="lineArtLayer" viewBox="0 0 700 700" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <div class="quick-action-bar">
+      <button type="button" class="dash-btn" onclick="Studio.undo()">↩️ تراجع</button>
+      <button type="button" class="dash-btn active-pink" id="freeModeBtn" onclick="Studio.activateFreeDraw()">🎨 رسم حر</button>
+      <button type="button" class="dash-btn active-gold" id="numTapBtn" onclick="Studio.toggleTapFillMode()">🔢 تلوين باللمس: مطفأ</button>
+      <button type="button" class="dash-btn active-mint" id="smartLockBtn" onclick="Studio.toggleSmartLock()">🔒 قفل الحدود: شغال</button>
+      <button type="button" class="dash-btn" onclick="Studio.adjustZoom(0.15)">➕</button>
+      <button type="button" class="dash-btn" onclick="Studio.adjustZoom(-0.15)">➖</button>
+      <button type="button" class="dash-btn" onclick="Studio.resetView()">🎯 توسيط</button>
+      <button type="button" class="dash-btn" style="color:#ff758f;" onclick="Studio.clearActiveLayer()">🗑️ مسح</button>
+      <button type="button" class="dash-btn btn-export" onclick="Studio.exportWithSignature()">🏆 حفظ بتوقيع آسيا</button>
+    </div>
+  </div>
+
+  <!-- العمود الأيسر: أنواع الفرش -->
+  <aside class="side-column">
+    <div class="card-header">
+      <span>🖌️ أنواع الفرش (1040)</span>
+      <span id="activeToolBadge" style="font-size:10px; color:var(--accent-cyan);">فرشة مائية</span>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:6px; font-size:11px; background:var(--bg-panel); padding:7px; border-radius:8px;">
+      <label style="display:flex; justify-content:space-between; align-items:center;">
+        <span>الحجم: <strong id="sizeVal" style="color:var(--accent-cyan);">14</strong></span>
+        <input type="range" id="brushSize" min="1" max="100" value="14" style="width:120px; accent-color:var(--accent-cyan);">
+      </label>
+      <label style="display:flex; justify-content:space-between; align-items:center;">
+        <span>الشفافية:</span>
+        <input type="range" id="brushOpacity" min="10" max="100" value="100" style="width:120px; accent-color:var(--accent-cyan);">
+      </label>
+      <label style="display:flex; justify-content:space-between; align-items:center;">
+        <span>التناظر:</span>
+        <select id="symmetryMode" style="background:#0b0c10; color:#fff; border:1px solid var(--border-subtle); border-radius:5px; padding:2px 6px;">
+          <option value="1">عادي (1x)</option>
+          <option value="2">مرآة (2x)</option>
+          <option value="4">رباعي (4x)</option>
+          <option value="8">ماندالا (8x)</option>
+          <option value="16">نجمي (16x)</option>
+        </select>
+      </label>
+    </div>
+    <input type="text" id="toolSearch" placeholder="🔍 ابحثي (جليتر، مائية، زيتي...)" style="width:100%; background:#0b0c10; border:1px solid var(--border-subtle); color:#fff; padding:6px 8px; border-radius:7px; font-size:11px;">
+    <div class="category-tabs" id="categoryTabs"></div>
+    <div class="tools-grid" id="toolsGrid"></div>
+  </aside>
+
+</section>
+
+<!-- 3. الأسفل: مكتبة اللوحات واستيراد الصور والطبقات -->
+<main class="bottom-dashboard" id="dashBody">
+  <div class="dash-card">
+    <div class="card-header">
+      <span>🖼️ مكتبة اللوحات (50 لوحة فنية)</span>
+      <button type="button" class="dash-btn active-gold" onclick="Studio.shuffleThreeArtworks()">🎲 جلب 3 لوحات جديدة</button>
+    </div>
+    <label for="uploadImageInput" style="background:linear-gradient(135deg, #ff2a6d, #7000ff); color:#fff; padding:10px; border-radius:10px; font-size:13px; font-weight:800; text-align:center; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;">
+      <span>📁 أضيفي صورة من جهازك للتلوين (أول اختيار)</span>
+    </label>
+    <input type="file" id="uploadImageInput" accept="image/*" style="display:none;" onchange="Studio.importDeviceImage(event)">
+    <select id="artworkSelector" onchange="Studio.loadArtwork(this.value)" style="width:100%; background:#0b0c10; color:#ffd700; border:1px solid var(--border-subtle); border-radius:8px; padding:7px 10px; font-size:12px; font-weight:700;"></select>
+    <div class="artwork-cards" id="threeArtCards"></div>
+  </div>
+
+  <div class="dash-card">
+    <div class="card-header">
+      <span>📚 الطبقات (Layers)</span>
+      <button type="button" class="dash-btn" onclick="Studio.addLayer()">+ طبقة جديدة</button>
+    </div>
+    <div id="layersList"></div>
+  </div>
+</main>
+
+<script>
+
+const FiftyColors = [
+  "#FF0000", "#FF4D4D", "#FF9999", "#990000", "#CC0066",
+  "#FF1493", "#FF69B4", "#FFB6C1", "#FFC0CB", "#DB7093",
+  "#FF4500", "#FF7F50", "#FFA500", "#FFD700", "#FFF44F",
+  "#FFFF00", "#F0E68C", "#BDB76B", "#808000", "#556B2F",
+  "#00FF00", "#32CD32", "#90EE90", "#008000", "#006400",
+  "#00FA9A", "#20B2AA", "#00CED1", "#00FFFF", "#E0FFFF",
+  "#87CEEB", "#00BFFF", "#1E90FF", "#0000FF", "#000080",
+  "#4B0082", "#8A2BE2", "#9370DB", "#DDA0DD", "#EE82EE",
+  "#8B4513", "#A0522D", "#D2691E", "#DEB887", "#F5DEB3",
+  "#FFFFFF", "#D3D3D3", "#808080", "#333333", "#000000"
+];
+
+const BabaMinaMessages = [
+  "يا آسيا يا قلب بابا مينا، وجودك في الدنيا نعمة كبيرة.. ركزي في مذاكرتك عشان مستقبلك هيبقى مبهر زيك 💖",
+  "بابا مينا بيحبك أوي وفخور بكل خطوة بتعمليها.. إنتي أشطر وأجمل بنوتة في العالم كله 👑✨",
+  "لو حسيتي بتعب من المذاكرة، ارسمي شوية وارتاحي، وافتكري إن بابا مينا دايماً في ضهرك وسندك للأبد 🌸",
+  "إنتي تستاهلي كل الفرح والنجاح يا آسيا.. خلي طموحك فوق السحاب وبابا مينا دايماً بيشجعك 🌟",
+  "كل رسمة بترسميها بتطلع حلوة عشان روحك نقية وجميلة.. كملي مذاكرتك بحماس يا حبيبة بابا 🎓💕",
+  "مهما كانت الظروف، إنتي بنتي الغالية اللي بفتخر بيها قدام الدنيا كلها.. ربنا يوفقك في دراستك يا آسيا 🤲💖"
+];
+
+setInterval(() => {
+  const qEl = document.getElementById("asiaQuote");
+  if (qEl) {
+    const msg = BabaMinaMessages[Math.floor(Math.random() * BabaMinaMessages.length)];
+    qEl.style.opacity = 0;
+    setTimeout(() => { qEl.innerText = msg; qEl.style.opacity = 1; }, 300);
+  }
+}, 14000);
+
+const ToolRegistry = [];
+
+const BaseBrushes = [
+  // فرش رسم وتلوين حقيقي (كل واحدة ليها طريقة رسم مختلفة)
+  { cat: "فرش رسم", icon: "🖌️", name: "فرشة ألوان مائية سايحة", engine: "watercolor" },
+  { cat: "فرش رسم", icon: "🎨", name: "فرشة ألوان زيتية تقيلة", engine: "oil" },
+  { cat: "فرش رسم", icon: "✒️", name: "قلم خط عربي مشطوف", engine: "calligraphy" },
+  { cat: "فرش رسم", icon: "✏️", name: "قلم رصاص سكتش ناعم", engine: "pencil" },
+  { cat: "فرش رسم", icon: "🖍️", name: "قلم فحم وتظليل", engine: "charcoal" },
+  { cat: "فرش رسم", icon: "💨", name: "بخاخ إيربراش ناعم", engine: "airbrush" },
+  { cat: "فرش رسم", icon: "🖊️", name: "قلم تحديد حبر أسود", engine: "ink" },
+  { cat: "فرش رسم", icon: "🧶", name: "فرشة خيوط حرير متداخلة", engine: "ribbon" },
+  { cat: "فرش رسم", icon: "🫧", name: "فرشة فقاعات ألوان شفافة", engine: "bubbles" },
+  { cat: "فرش رسم", icon: "🌿", name: "فرشة ورق شجر عشوائي", engine: "foliage" },
+
+  // إضاءة وجليتر ولمعة بناتي شيك
+  { cat: "جليتر وإضاءة", icon: "✨", name: "جليتر ألماس بيلمع", engine: "glitter" },
+  { cat: "جليتر وإضاءة", icon: "⚡", name: "قلم نيون مضيء", engine: "neon" },
+  { cat: "جليتر وإضاءة", icon: "🌟", name: "غبار نجوم ذهبي", engine: "stardust" },
+  { cat: "جليتر وإضاءة", icon: "💫", name: "هالة ضوء ناعمة", engine: "halo" },
+  { cat: "جليتر وإضاءة", icon: "🔮", name: "إضاءة هولوجرام ملونة", engine: "holo" },
+
+  // تعبئة ذكية للمساحات
+  { cat: "تعبئة ذكية", icon: "🪣", name: "جردل تلوين بلمسة واحدة", engine: "fill" },
+  { cat: "تعبئة ذكية", icon: "🌈", name: "تعبئة تدرج لوني ناعم", engine: "gradfill" },
+
+  // أختام وزخارف جاهزة بضغطة واحدة
+  { cat: "أختام وزخارف", icon: "🌸", name: "ختم وردة بلدي", engine: "stamp_flower" },
+  { cat: "أختام وزخارف", icon: "💖", name: "ختم قلب ناعم", engine: "stamp_heart" },
+  { cat: "أختام وزخارف", icon: "🦋", name: "ختم فراشة رقيقة", engine: "stamp_butterfly" },
+  { cat: "أختام وزخارف", icon: "⭐", name: "ختم نجمة رباعية", engine: "stamp_star" },
+  { cat: "أختام وزخارف", icon: "💎", name: "ختم فص ألماس", engine: "stamp_diamond" },
+
+  // تعديل وممحاة وقطارة
+  { cat: "أدوات تعديل", icon: "🧽", name: "أستيكة ناعمة", engine: "eraser_soft" },
+  { cat: "أدوات تعديل", icon: "🧹", name: "أستيكة دقيقة للحواف", engine: "eraser_hard" },
+  { cat: "أدوات تعديل", icon: "💧", name: "قطارة سحب اللون", engine: "eyedropper" },
+  { cat: "أدوات تعديل", icon: "🌫️", name: "فرشة تسييح ودمج الألوان", engine: "smudge" }
+];
+
+const Variants = [
+  { suffix: "ناعم", mult: 0.7, alphaMod: 0.85 },
+  { suffix: "متوسط", mult: 1.0, alphaMod: 1.0 },
+  { suffix: "عريض", mult: 1.5, alphaMod: 0.9 },
+  { suffix: "شفاف", mult: 1.1, alphaMod: 0.45 },
+  { suffix: "مكثف", mult: 1.2, alphaMod: 1.0 },
+  { suffix: "فني", mult: 0.9, alphaMod: 0.75 },
+  { suffix: "دقيق", mult: 0.5, alphaMod: 0.95 },
+  { suffix: "ملكي", mult: 1.3, alphaMod: 0.8 }
+];
+
+// توليد 1000+ أداة بأسماء مصرية وكل مجموعة ليها محرك رسم مختلف
+for (let tier = 1; tier <= 5; tier++) {
+  BaseBrushes.forEach((b, bIdx) => {
+    Variants.forEach((v, vIdx) => {
+      ToolRegistry.push({
+        id: `tool_${tier}_${bIdx}_${vIdx}`,
+        category: b.cat,
+        icon: b.icon,
+        name: `${b.name} (${v.suffix} ${tier})`,
+        engine: b.engine,
+        sizeMult: v.mult,
+        alphaMod: v.alphaMod,
+        tier: tier
+      });
+    });
+  });
+}
+
+
+const FiftyArtworksCatalog = [
+  { id: "farm", title: "1. فيلا ومزرعة كبيرة بكل تفرعاتها 🏡" },
+  { id: "bride", title: "2. عروسة بفستان زفاف ملكي 👰‍♀️" },
+  { id: "girl", title: "3. بورتريه بنوتة وورود شيك 🌸" },
+  { id: "cozy", title: "4. ركن القهوة والكتب والمزيكا ☕" }
+];
+
+const ExtraThemes = [
+  { prefix: "قصر الأميرات والحديقة الملكية", style: "palace" },
+  { prefix: "فستان سهرة هوت كوتور مزخرف", style: "dress" },
+  { prefix: "باقة زهور وتوليب ربيعية", style: "bouquet" },
+  { prefix: "فراشة ملكية بأجنحة مزخرفة", style: "butterfly" },
+  { prefix: "ماندالا النجوم والكريستال", style: "mandala" },
+  { prefix: "شرفة تطل على البحر والغروب", style: "balcony" },
+  { prefix: "تاج ملكي مرصع بالألماس", style: "crown" },
+  { prefix: "زجاجة عطر فرنسي كلاسيك", style: "perfume" },
+  { prefix: "حديقة فراشات وورود متسلقة", style: "garden" }
+];
+
+for (let i = 5; i <= 50; i++) {
+  const th = ExtraThemes[(i - 5) % ExtraThemes.length];
+  const variantNum = Math.floor((i - 5) / ExtraThemes.length) + 1;
+  FiftyArtworksCatalog.push({
+    id: `art_${i}`,
+    title: `${i}. ${th.prefix} (تصميم ${variantNum}) ✨`,
+    style: th.style,
+    seed: i
+  });
+}
+
+const StudioArtExtras = {
+  populateArtworkDropdown() {
+    const sel = document.getElementById("artworkSelector");
+    if (!sel) return;
+    sel.innerHTML = FiftyArtworksCatalog.map(a => `<option value="${a.id}">${a.title}</option>`).join("");
+  },
+
+  shuffleThreeArtworks() {
+    const container = document.getElementById("threeArtCards");
+    if (!container) return;
+    const shuffled = [...FiftyArtworksCatalog].sort(() => 0.5 - Math.random()).slice(0, 3);
+    container.innerHTML = shuffled.map(a => `
+      <button type="button" class="art-card-btn" style="text-align:center; font-size:11px; padding:8px 5px;" onclick="Studio.selectFromCatalog('${a.id}', this)">
+        ${a.title}
+      </button>
+    `).join("");
+  },
+
+  selectFromCatalog(id, btn) {
+    document.querySelectorAll(".art-card-btn").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    const sel = document.getElementById("artworkSelector");
+    if (sel) sel.value = id;
+    Studio.loadArtwork(id);
+  },
+
+  // محرك استيراد صورة من جهاز المستخدم وتحويلها تلقائياً إلى رسمة خطية قابلة للتلوين
+  importDeviceImage(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const temp = document.createElement("canvas");
+        temp.width = 700;
+        temp.height = 700;
+        const tCtx = temp.getContext("2d");
+        tCtx.fillStyle = "#ffffff";
+        tCtx.fillRect(0, 0, 700, 700);
+
+        // الحفاظ على أبعاد الصورة وتوسيطها داخل اللوحة
+        const scale = Math.min(660 / img.width, 660 / img.height);
+        const w = img.width * scale;
+        const h = img.height * scale;
+        const ox = (700 - w) / 2;
+        const oy = (700 - h) / 2;
+        tCtx.drawImage(img, ox, oy, w, h);
+
+        // خوارزمية استخراج الحواف (Sobel Edge Detection) لتحويل الصورة لخطوط سوداء للتلوين
+        const srcData = tCtx.getImageData(0, 0, 700, 700);
+        const dstData = tCtx.createImageData(700, 700);
+        const s = srcData.data;
+        const d = dstData.data;
+
+        const gray = new Float32Array(700 * 700);
+        for (let i = 0; i < 700 * 700; i++) {
+          gray[i] = 0.299 * s[i * 4] + 0.587 * s[i * 4 + 1] + 0.114 * s[i * 4 + 2];
+        }
+
+        Studio.lineShield = new Uint8Array(700 * 700);
+        for (let y = 1; y < 699; y++) {
+          for (let x = 1; x < 699; x++) {
+            const idx = y * 700 + x;
+            const gx = -gray[idx - 701] + gray[idx - 699] - 2 * gray[idx - 1] + 2 * gray[idx + 1] - gray[idx + 699] + gray[idx + 701];
+            const gy = -gray[idx - 701] - 2 * gray[idx - 700] - gray[idx - 699] + gray[idx + 699] + 2 * gray[idx + 700] + gray[idx + 701];
+            const mag = Math.sqrt(gx * gx + gy * gy);
+            const pIdx = idx * 4;
+            if (mag > 65) {
+              d[pIdx] = 20;
+              d[pIdx + 1] = 20;
+              d[pIdx + 2] = 20;
+              d[pIdx + 3] = 255;
+              Studio.lineShield[idx] = 1;
+            } else {
+              d[pIdx + 3] = 0;
+            }
+          }
+        }
+
+        tCtx.putImageData(dstData, 0, 0);
+        const dataUrl = temp.toDataURL("image/png");
+        const svgEl = document.getElementById("lineArtLayer");
+        svgEl.innerHTML = `<image href="${dataUrl}" x="0" y="0" width="700" height="700"/>`;
+        Studio.boundaryCanvas = temp;
+        Studio.smartLock = true;
+        document.getElementById("smartLockBtn").innerText = "🔒 قفل الحدود: شغال";
+        Studio.clearActiveLayer();
+        Studio.playTone(720);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+const ArtworkGenerator = {
+  getSVG(type) {
+    if (type === "blank") return "";
+
+    // 1. فيلا ومزرعة كبيرة بكل تفرعاتها
+    if (type === "farm") {
+      return `
+      <g stroke="#1a1a1a" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <!-- السماء والسحب والشمس والجبال البعيدة -->
+        <circle cx="580" cy="95" r="38"/>
+        <path d="M 580 42 L 580 25 M 580 148 L 580 165 M 527 95 L 510 95 M 633 95 L 650 95 M 542 57 L 530 45 M 618 133 L 630 145 M 618 57 L 630 45 M 542 133 L 530 145"/>
+        <path d="M 80 100 Q 95 75 120 85 Q 145 65 170 85 Q 195 80 200 105 Q 190 120 165 118 L 95 118 Q 75 115 80 100 Z"/>
+        <path d="M 320 75 Q 335 55 360 65 Q 380 50 405 68 Q 425 65 428 85 Q 415 98 390 95 L 335 95 Q 315 92 320 75 Z"/>
+        <!-- تلال وجبال خلفية -->
+        <path d="M 0 250 Q 110 160 240 230 Q 370 150 510 225 Q 610 175 700 235 L 700 280 L 0 280 Z"/>
+        <!-- طاحونة الهواء على التل الأيسر -->
+        <polygon points="85,245 100,155 120,155 135,245"/>
+        <rect x="97" y="145" width="26" height="12"/>
+        <circle cx="110" cy="151" r="5"/>
+        <path d="M 110 151 L 65 115 L 75 107 L 110 151 L 145 105 L 153 115 L 110 151 L 150 190 L 140 198 L 110 151 L 70 192 L 62 182 Z"/>
+        <!-- القصر / الفيلا الرئيسية في المنتصف -->
+        <rect x="230" y="250" width="220" height="150"/>
+        <!-- الدور الثاني والبرج الجانبي -->
+        <rect x="255" y="185" width="170" height="65"/>
+        <polygon points="220,250 340,145 460,250"/>
+        <polygon points="245,185 340,120 435,185"/>
+        <!-- مدخنة الفيلا -->
+        <rect x="395" y="130" width="22" height="40"/>
+        <rect x="391" y="124" width="30" height="7"/>
+        <!-- بلكونة وشبابيك الفيلا -->
+        <rect x="315" y="198" width="50" height="45" rx="22"/>
+        <line x1="340" y1="198" x2="340" y2="243"/><line x1="315" y1="220" x2="365" y2="220"/>
+        <rect x="268" y="202" width="30" height="35"/><line x1="283" y1="202" x2="283" y2="237"/>
+        <rect x="382" y="202" width="30" height="35"/><line x1="397" y1="202" x2="397" y2="237"/>
+        <!-- الدور الأرضي وباب القصر المقوس -->
+        <path d="M 318 400 L 318 335 A 22 22 0 0 1 362 335 L 362 400 Z"/>
+        <circle cx="354" cy="368" r="3"/>
+        <rect x="252" y="290" width="44" height="55"/><line x1="274" y1="290" x2="274" y2="345"/><line x1="252" y1="317" x2="296" y2="317"/>
+        <rect x="384" y="290" width="44" height="55"/><line x1="406" y1="290" x2="406" y2="345"/><line x1="384" y1="317" x2="428" y2="317"/>
+        <!-- حظيرة المزرعة الحمراء على اليمين وصومعة الغلال -->
+        <rect x="520" y="295" width="130" height="105"/>
+        <polygon points="512,295 585,235 658,295"/>
+        <rect x="560" y="335" width="50" height="65"/>
+        <line x1="560" y1="335" x2="610" y2="400"/><line x1="610" y1="335" x2="560" y2="400"/>
+        <rect x="650" y="255" width="35" height="145"/>
+        <path d="M 650 255 A 17.5 17.5 0 0 1 685 255"/>
+        <!-- أشجار كبيرة ومورقة على اليسار -->
+        <rect x="45" y="325" width="22" height="75"/>
+        <circle cx="56" cy="295" r="42"/><circle cx="30" cy="315" r="30"/><circle cx="82" cy="315" r="30"/>
+        <rect x="145" y="340" width="16" height="60"/>
+        <circle cx="153" cy="315" r="32"/><circle cx="132" cy="330" r="22"/><circle cx="174" cy="330" r="22"/>
+        <!-- سور خشبي للمزرعة -->
+        <line x1="15" y1="425" x2="285" y2="425"/><line x1="15" y1="442" x2="285" y2="442"/>
+        <rect x="25" y="412" width="10" height="42"/><rect x="65" y="412" width="10" height="42"/>
+        <rect x="105" y="412" width="10" height="42"/><rect x="145" y="412" width="10" height="42"/>
+        <rect x="185" y="412" width="10" height="42"/><rect x="225" y="412" width="10" height="42"/>
+        <rect x="265" y="412" width="10" height="42"/>
+        <!-- ممر حجري من باب الفيلا للأمام -->
+        <path d="M 318 400 Q 290 520 220 680 L 340 680 Q 355 520 362 400 Z"/>
+        <!-- بحيرة مياه هادئة وكوبري خشبي -->
+        <ellipse cx="530" cy="560" rx="135" ry="65"/>
+        <path d="M 465 510 Q 530 475 595 510 L 595 530 Q 530 495 465 530 Z"/>
+        <!-- حديقة زهور وحوض زرع في المقدمة -->
+        <circle cx="75" cy="540" r="18"/><circle cx="75" cy="540" r="7"/>
+        <circle cx="135" cy="585" r="22"/><circle cx="135" cy="585" r="8"/>
+        <circle cx="65" cy="630" r="20"/><circle cx="65" cy="630" r="7"/>
+        <path d="M 400 650 Q 430 620 460 650 Q 490 620 520 650"/>
+      </g>`;
+    }
+
+    // 2. عروسة بفستان زفاف ملكي (Haute Couture Bride)
+    if (type === "bride") {
+      return `
+      <g stroke="#1a1a1a" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <!-- الطرحة الملكية الكبيرة المنسدلة -->
+        <path d="M 305 115 Q 140 160 95 460 Q 150 510 215 470"/>
+        <path d="M 395 115 Q 560 160 605 460 Q 550 510 485 470"/>
+        <!-- التاج الملكي -->
+        <polygon points="315,105 325,75 338,95 350,65 362,95 375,75 385,105"/>
+        <circle cx="350" cy="88" r="4"/>
+        <!-- الشعر المرفوع وخصلات جانبية -->
+        <path d="M 308 135 Q 305 95 350 95 Q 395 95 392 135"/>
+        <path d="M 308 135 Q 290 185 305 235"/>
+        <path d="M 392 135 Q 410 185 395 235"/>
+        <!-- الوجه والملامح الراقية -->
+        <path d="M 315 130 Q 315 185 350 195 Q 385 185 385 130"/>
+        <path d="M 326 145 Q 335 140 343 145"/>
+        <path d="M 357 145 Q 365 140 374 145"/>
+        <path d="M 342 173 Q 350 180 358 173"/>
+        <!-- الرقبة والعقد اللؤلؤي -->
+        <path d="M 336 192 L 334 222 M 364 192 L 366 222"/>
+        <path d="M 328 220 Q 350 238 372 220"/>
+        <circle cx="350" cy="233" r="4"/>
+        <!-- الكورسيه المزخرف والأكتاف -->
+        <path d="M 295 235 Q 320 222 350 238 Q 380 222 405 235 L 388 335 L 312 335 Z"/>
+        <path d="M 312 260 Q 350 280 388 260"/>
+        <path d="M 312 295 Q 350 315 388 295"/>
+        <line x1="350" y1="238" x2="350" y2="335"/>
+        <!-- الذراعان وبوكيه الورد -->
+        <path d="M 295 235 Q 260 295 305 345"/>
+        <path d="M 405 235 Q 440 295 395 345"/>
+        <circle cx="350" cy="355" r="34"/>
+        <circle cx="335" cy="345" r="12"/><circle cx="365" cy="345" r="12"/>
+        <circle cx="350" cy="368" r="13"/><circle cx="350" cy="338" r="11"/>
+        <!-- تنورة الفستان الضخمة بطبقات الدانتيل -->
+        <path d="M 312 335 Q 180 450 130 660 Q 350 695 570 660 Q 520 450 388 335 Z"/>
+        <path d="M 275 390 Q 350 420 425 390"/>
+        <path d="M 225 475 Q 350 515 475 475"/>
+        <path d="M 175 565 Q 350 615 525 565"/>
+        <path d="M 325 388 L 240 672 M 350 390 L 350 678 M 375 388 L 460 672"/>
+      </g>`;
+    }
+
+    // 3. بورتريه بنوتة وورود Aesthetic
+    if (type === "girl") {
+      return `
+      <g stroke="#1a1a1a" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <!-- إطار دائري مزخرف بالورود -->
+        <circle cx="350" cy="350" r="290"/>
+        <circle cx="350" cy="350" r="275"/>
+        <!-- الشعر المموج الطويل -->
+        <path d="M 250 260 Q 220 130 350 115 Q 480 130 450 260 Q 495 380 465 530 Q 420 490 410 410"/>
+        <path d="M 250 260 Q 205 380 235 530 Q 280 490 290 410"/>
+        <path d="M 275 215 Q 340 165 425 220"/>
+        <!-- الوجه والنظارة العصرية / العيون -->
+        <path d="M 278 235 Q 275 345 350 370 Q 425 345 422 235"/>
+        <path d="M 298 265 Q 318 252 338 265 Q 318 278 298 265 Z"/>
+        <circle cx="318" cy="265" r="6"/>
+        <path d="M 362 265 Q 382 252 402 265 Q 382 278 362 265 Z"/>
+        <circle cx="382" cy="265" r="6"/>
+        <path d="M 345 285 L 342 310 L 354 312"/>
+        <path d="M 330 332 Q 350 346 370 332 Q 350 338 330 332 Z"/>
+        <!-- حلق دائري كبير -->
+        <circle cx="268" cy="315" r="18"/>
+        <circle cx="432" cy="315" r="18"/>
+        <!-- الرقبة والبلوزة الأنيقة -->
+        <path d="M 322 362 L 315 425 M 378 362 L 385 425"/>
+        <path d="M 240 465 Q 350 415 460 465 L 495 595 Q 350 640 205 595 Z"/>
+        <!-- باقة ورود كبيرة تحيط بالبورتريه -->
+        <g transform="translate(170, 460)">
+          <circle cx="0" cy="0" r="35"/><circle cx="0" cy="0" r="18"/><circle cx="0" cy="0" r="7"/>
+          <path d="M -35 -20 Q -65 -40 -55 0 Q -65 30 -35 20"/>
+        </g>
+        <g transform="translate(530, 460)">
+          <circle cx="0" cy="0" r="35"/><circle cx="0" cy="0" r="18"/><circle cx="0" cy="0" r="7"/>
+          <path d="M 35 -20 Q 65 -40 55 0 Q 65 30 35 20"/>
+        </g>
+        <g transform="translate(350, 565)">
+          <circle cx="0" cy="0" r="40"/><circle cx="0" cy="0" r="20"/><circle cx="0" cy="0" r="8"/>
+          <circle cx="-48" cy="-10" r="24"/><circle cx="48" cy="-10" r="24"/>
+        </g>
+      </g>`;
+    }
+
+    // 4. ركن القهوة والكتب والمزيكا (Cozy Aesthetic Corner)
+    if (type === "cozy") {
+      return `
+      <g stroke="#1a1a1a" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <!-- شباك كبير يطل على الهلال والنجوم -->
+        <rect x="90" y="70" width="240" height="270" rx="120"/>
+        <line x1="210" y1="70" x2="210" y2="340"/>
+        <line x1="90" y1="210" x2="330" y2="210"/>
+        <path d="M 165 135 A 25 25 0 1 0 185 165 A 20 20 0 1 1 165 135 Z"/>
+        <!-- أرفف كتب ونباتات متدلية -->
+        <rect x="380" y="130" width="230" height="14"/>
+        <rect x="395" y="75" width="18" height="55"/><rect x="415" y="82" width="16" height="48"/>
+        <rect x="433" y="70" width="20" height="60"/><rect x="458" y="85" width="45" height="45"/>
+        <!-- أصيص زرع متدلي -->
+        <polygon points="535,90 575,90 568,130 542,130"/>
+        <path d="M 545 90 Q 525 60 540 45 M 555 90 Q 555 50 570 40 M 565 90 Q 590 65 585 115"/>
+        <!-- ترابيزة خشبية دائرية -->
+        <ellipse cx="350" cy="495" rx="240" ry="45"/>
+        <rect x="330" y="540" width="40" height="120"/>
+        <path d="M 250 660 L 450 660"/>
+        <!-- مج قهوة ساخن ببخار -->
+        <path d="M 240 445 L 300 445 L 293 495 L 247 495 Z"/>
+        <path d="M 300 455 Q 320 455 320 470 Q 320 485 296 485"/>
+        <path d="M 258 430 Q 250 410 262 395 M 278 430 Q 270 410 282 395"/>
+        <!-- كرواسون وكتاب مفتوح -->
+        <ellipse cx="420" cy="482" rx="45" ry="18"/>
+        <path d="M 330 430 Q 375 415 415 430 L 415 468 Q 375 455 330 468 Z"/>
+        <path d="M 415 430 Q 455 415 495 430 L 495 468 Q 455 455 415 468 Z"/>
+        <!-- جراموفون / مشغل موسيقى كلاسيك -->
+        <rect x="440" y="345" width="130" height="55"/>
+        <circle cx="505" cy="345" r="42"/>
+        <circle cx="505" cy="345" r="12"/>
+      </g>`;
+    }
+
+    // توليد اللوحات من 5 إلى 50 بتفاصيل غنية ومتنوعة
+    const item = FiftyArtworksCatalog.find(a => a.id === type);
+    if (item) {
+      const seed = item.seed || 7;
+      let svg = `<g stroke="#1a1a1a" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round">`;
+      svg += `<rect x="35" y="35" width="630" height="630" rx="20"/><rect x="48" y="48" width="604" height="604" rx="14"/>`;
+
+      if (item.style === "palace") {
+        svg += `<path d="M 120 580 L 120 320 L 220 260 L 350 160 L 480 260 L 580 320 L 580 580 Z"/>`;
+        svg += `<path d="M 290 580 L 290 430 A 60 60 0 0 1 410 430 L 410 580 Z"/>`;
+        svg += `<path d="M 270 220 Q 350 100 430 220 Z"/><line x1="350" y1="90" x2="350" y2="145"/>`;
+        for (let x = 160; x <= 540; x += 95) {
+          svg += `<rect x="${x - 22}" y="340" width="44" height="65" rx="22"/>`;
+        }
+        svg += `<path d="M 48 580 L 652 580"/><ellipse cx="350" cy="615" rx="180" ry="25"/>`;
+      } else if (item.style === "dress") {
+        svg += `<path d="M 290 140 Q 350 175 410 140 L 395 270 L 305 270 Z"/>`;
+        svg += `<path d="M 305 270 Q 150 420 110 620 Q 350 660 590 620 Q 550 420 395 270 Z"/>`;
+        const waves = 4 + (seed % 4);
+        for (let w = 1; w <= waves; w++) {
+          const y = 270 + (w * 340) / (waves + 1);
+          svg += `<path d="M ${305 - w * 32} ${y} Q 350 ${y + 35} ${395 + w * 32} ${y}"/>`;
+        }
+        svg += `<circle cx="350" cy="270" r="16"/><path d="M 320 270 Q 280 310 295 340 M 380 270 Q 420 310 405 340"/>`;
+      } else if (item.style === "butterfly" || item.style === "mandala") {
+        const petals = 8 + (seed % 8) * 2;
+        for (let r = 260; r >= 50; r -= 50) {
+          svg += `<circle cx="350" cy="350" r="${r}"/>`;
+          for (let p = 0; p < petals; p++) {
+            const a1 = (p * 2 * Math.PI) / petals;
+            const a2 = ((p + 1) * 2 * Math.PI) / petals;
+            const x1 = 350 + r * Math.cos(a1), y1 = 350 + r * Math.sin(a1);
+            const x2 = 350 + r * Math.cos(a2), y2 = 350 + r * Math.sin(a2);
+            svg += `<path d="M 350 350 L ${x1.toFixed(1)} ${y1.toFixed(1)} Q 350 350 ${x2.toFixed(1)} ${y2.toFixed(1)} Z"/>`;
+          }
+        }
+      } else if (item.style === "perfume" || item.style === "crown") {
+        svg += `<rect x="210" y="250" width="280" height="310" rx="45"/>`;
+        svg += `<rect x="245" y="295" width="210" height="220" rx="20"/>`;
+        svg += `<rect x="305" y="195" width="90" height="55"/>`;
+        svg += `<polygon points="275,195 295,120 350,155 405,120 425,195"/>`;
+        svg += `<circle cx="350" cy="405" r="55"/><circle cx="350" cy="405" r="28"/>`;
+      } else {
+        // باقات زهور وحدائق وشرفات متنوعة
+        const count = 5 + (seed % 5);
+        for (let k = 0; k < count; k++) {
+          const cx = 160 + ((k * 137) % 380);
+          const cy = 170 + ((k * 97) % 340);
+          const rad = 45 + (k % 3) * 18;
+          svg += `<circle cx="${cx}" cy="${cy}" r="${rad}"/><circle cx="${cx}" cy="${cy}" r="${rad * 0.55}"/><circle cx="${cx}" cy="${cy}" r="${rad * 0.2}"/>`;
+          svg += `<path d="M ${cx} ${cy + rad} Q ${cx - 20} 580 350 610"/>`;
+        }
+        svg += `<polygon points="230,470 470,470 430,620 270,620"/>`;
+      }
+      svg += `</g>`;
+      return svg;
+    }
+    return "";
+  }
+};
+</script>
+<script>
+const Studio = {
+  layers: [],
+  activeLayerIdx: 0,
+  currentTool: ToolRegistry[0],
+  color: '#00e5ff',
+  size: 12,
+  opacity: 1,
+  symmetry: 1,
+  isDrawing: false,
+  lastX: 0,
+  lastY: 0,
+  history: [],
+  zoom: 1,
+  panX: 0,
+  panY: 0,
+  isPanning: false,
+  audioCtx: null,
+  smartLock: true,
+  activeMaskCanvas: null,
+  strokeBufferCanvas: null,
+  preStrokeSnapshot: null,
+
+  shuffleThreeArtworks() { StudioArtExtras.shuffleThreeArtworks(); },
+  importDeviceImage(e) { StudioArtExtras.importDeviceImage(e); },
+  selectFromCatalog(id, btn) { StudioArtExtras.selectFromCatalog(id, btn); },
+  toggleZenMode() {
+    document.getElementById("dashBody").classList.toggle("zen-mode");
+  },
+
+  adjustZoom(delta) {
+    this.zoom = Math.min(Math.max(0.4, this.zoom + delta), 4);
+    document.getElementById("canvasStack").style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.zoom})`;
+  },
+
+  resetView() {
+    this.zoom = 1;
+    this.panX = 0;
+    this.panY = 0;
+    document.getElementById("canvasStack").style.transform = "translate(0px, 0px) scale(1)";
+  },
+
+  pickArtCard(type, btn) {
+    document.querySelectorAll(".art-card-btn").forEach(b => b.classList.remove("active"));
+    if (btn) btn.classList.add("active");
+    document.getElementById("artworkSelector").value = type;
+    this.loadArtwork(type);
+  },
+
+  exportWithSignature() {
+    const exportCanvas = document.createElement("canvas");
+    exportCanvas.width = 1400;
+    exportCanvas.height = 1480;
+    const eCtx = exportCanvas.getContext("2d");
+    eCtx.fillStyle = "#ffffff";
+    eCtx.fillRect(0, 0, 1400, 1480);
+
+    this.layers.forEach(l => eCtx.drawImage(l, 0, 0, 1400, 1400));
+
+    const svgEl = document.getElementById("lineArtLayer");
+    const inner = svgEl.innerHTML;
+    const fixedSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1400" viewBox="0 0 700 700">${inner}</svg>`;
+    const img = new Image();
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(fixedSvg);
+    img.onload = () => {
+      eCtx.drawImage(img, 0, 0, 1400, 1400);
+      // شريط التوقيع الذهبي أسفل اللوحة
+      eCtx.fillStyle = "#151722";
+      eCtx.fillRect(0, 1400, 1400, 80);
+      eCtx.fillStyle = "#ffd700";
+      eCtx.font = "bold 32px sans-serif";
+      eCtx.textAlign = "center";
+      eCtx.fillText("👑 إبداع الفنانة آسيا حبيبة بابا مينا • فخور بيكي دايماً 💖", 700, 1450);
+
+      const link = document.createElement("a");
+      link.download = `Asia-Masterpiece-${Date.now()}.png`;
+      link.href = exportCanvas.toDataURL("image/png");
+      link.click();
+    };
+  },
+  toggleSmartLock() {
+    this.smartLock = !this.smartLock;
+    const btn = document.getElementById("smartLockBtn");
+    btn.innerText = this.smartLock ? "🔒 التلوين داخل الحدود: شغال" : "🔓 التلوين الحر: مفتوح";
+    btn.style.borderColor = this.smartLock ? "#00ff88" : "#ff9e00";
+    btn.style.color = this.smartLock ? "#00ff88" : "#ff9e00";
+  },
+
+  // بناء قناع حماية فوري للمنطقة المحصورة بين الخطوط السوداء
+  buildRegionMask(startX, startY) {
+    if (!this.lineShield || !this.smartLock) {
+      this.activeMaskCanvas = null;
+      return;
+    }
+    const sx = Math.round(startX), sy = Math.round(startY);
+    if (sx < 0 || sx >= 700 || sy < 0 || sy >= 700) {
+      this.activeMaskCanvas = null;
+      return;
+    }
+    // إذا بدأت الضغطة على الخط الأسود نفسه، نبحث في محيط 3 بكسل عن أقرب نقطة داخلية
+    let seedX = sx, seedY = sy;
+    if (this.lineShield[sy * 700 + sx] === 1) {
+      let found = false;
+      for (let dy = -3; dy <= 3 && !found; dy++) {
+        for (let dx = -3; dx <= 3 && !found; dx++) {
+          const nx = sx + dx, ny = sy + dy;
+          if (nx >= 0 && nx < 700 && ny >= 0 && ny < 700 && this.lineShield[ny * 700 + nx] === 0) {
+            seedX = nx; seedY = ny; found = true;
+          }
+        }
+      }
+      if (!found) { this.activeMaskCanvas = null; return; }
+    }
+
+    const maskCanvas = document.createElement("canvas");
+    maskCanvas.width = 700;
+    maskCanvas.height = 700;
+    const mCtx = maskCanvas.getContext("2d");
+    const mImg = mCtx.createImageData(700, 700);
+    const mData = mImg.data;
+
+    const visited = new Uint8Array(700 * 700);
+    const stack = [seedY * 700 + seedX];
+    visited[seedY * 700 + seedX] = 1;
+
+    while (stack.length > 0) {
+      const pos = stack.pop();
+      mData[pos * 4 + 3] = 255;
+
+      const x = pos % 700;
+      const y = (pos - x) / 700;
+
+      if (x > 0) { const n = pos - 1; if (!visited[n] && this.lineShield[n] === 0) { visited[n] = 1; stack.push(n); } }
+      if (x < 699) { const n = pos + 1; if (!visited[n] && this.lineShield[n] === 0) { visited[n] = 1; stack.push(n); } }
+      if (y > 0) { const n = pos - 700; if (!visited[n] && this.lineShield[n] === 0) { visited[n] = 1; stack.push(n); } }
+      if (y < 699) { const n = pos + 700; if (!visited[n] && this.lineShield[n] === 0) { visited[n] = 1; stack.push(n); } }
+    }
+
+    mCtx.putImageData(mImg, 0, 0);
+    this.activeMaskCanvas = maskCanvas;
+  },
+
+  init() {
+    this.layers = [
+      document.getElementById('layer0'),
+      document.getElementById('layer1')
+    ];
+    this.activeLayerIdx = 1;
+    this.renderCategories();
+    this.renderTools(ToolRegistry.slice(0, 60));
+    this.renderPalette();
+    this.renderLayersUI();
+    StudioArtExtras.populateArtworkDropdown();
+    StudioArtExtras.shuffleThreeArtworks();
+    this.loadArtwork('farm');
+    this.bindEvents();
+    this.saveHistory();
+  },
+
+  playTone(freq = 440) {
+    try {
+      if (!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = this.audioCtx.createOscillator();
+      const gain = this.audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.03, this.audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, this.audioCtx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(this.audioCtx.destination);
+      osc.start();
+      osc.stop(this.audioCtx.currentTime + 0.08);
+    } catch (e) {}
+  },
+
+  renderCategories() {
+    const cats = ['الكل', ...new Set(ToolRegistry.map(t => t.category))];
+    const container = document.getElementById('categoryTabs');
+    container.innerHTML = cats.map((c, i) => 
+      `<div class="cat-tab ${i === 0 ? 'active' : ''}" onclick="Studio.filterCategory('${c}', this)">${c}</div>`
+    ).join('');
+  },
+
+  filterCategory(cat, el) {
+    document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const filtered = cat === 'الكل' ? ToolRegistry.slice(0, 90) : ToolRegistry.filter(t => t.category === cat);
+    this.renderTools(filtered);
+  },
+
+  renderTools(list) {
+    const grid = document.getElementById('toolsGrid');
+    grid.innerHTML = list.map(t => `
+      <div class="tool-item ${this.currentTool.id === t.id ? 'active' : ''}" onclick="Studio.selectTool('${t.id}')" title="${t.name}">
+        <div class="tool-icon">${t.icon}</div>
+        <div>${t.name}</div>
+      </div>
+    `).join('');
+  },
+
+  selectTool(id) {
+    this.currentTool = ToolRegistry.find(t => t.id === id) || ToolRegistry[0];
+    document.querySelectorAll('.tool-item').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    document.getElementById('activeToolBadge').innerText = this.currentTool.name; this.playTone(520);
+  },
+
+  tapFillMode: false,
+
+  toggleTapFillMode() {
+    this.tapFillMode = !this.tapFillMode;
+    const btn = document.getElementById("numTapBtn");
+    btn.innerText = this.tapFillMode ? "🔢 تلوين باللمس (برقم اللون): شغال ✓" : "🔢 تلوين باللمس (برقم اللون): مطفأ";
+    btn.style.background = this.tapFillMode ? "rgba(255,215,0,0.2)" : "";
+  },
+
+  activateFreeDraw() {
+    document.getElementById("artworkSelector").value = "blank";
+    this.loadArtwork("blank");
+    this.smartLock = false;
+    this.tapFillMode = false;
+    document.getElementById("smartLockBtn").innerText = "🔓 التلوين الحر: مفتوح";
+    document.getElementById("numTapBtn").innerText = "🔢 تلوين باللمس (برقم اللون): مطفأ";
+    this.clearActiveLayer();
+    this.playTone(660);
+  },
+
+  selectColorByNumber(num) {
+    const idx = parseInt(num) - 1;
+    if (idx >= 0 && idx < FiftyColors.length) {
+      const hex = FiftyColors[idx];
+      this.setColor(hex);
+      document.getElementById("colorNumInput").value = num;
+      document.querySelectorAll(".num-swatch").forEach((el, i) => {
+        el.classList.toggle("active", i === idx);
+      });
+    }
+  },
+
+  switchPaletteMode(mode) {
+    const presets = {
+      fifty: FiftyColors,
+      pastel: ["#FFD1DC","#FFECB3","#C8E6C9","#B3E5FC","#E1BEE7","#F8BBD0","#DCEDC8","#B2EBF2","#D1C4E9","#FFE0B2","#F0F4C3","#B2DFDB","#BBDEFB","#F5F5F5","#FFCCBC","#CFD8DC","#FFF9C4","#E6EE9C","#80DEEA","#CE93D8"],
+      royal: ["#FFFFFF","#FFF8E7","#F7E7CE","#FADADD","#FFB6C1","#E6E6FA","#D8BFD8","#FFD700","#C0C0C0","#B76E79","#800020","#4B0082","#191970","#2E8B57","#DC143C","#FF69B4","#DDA0DD","#F0E68C","#E0FFFF","#1C1C1C"],
+      nature: ["#87CEEB","#00BFFF","#FFD700","#228B22","#32CD32","#90EE90","#006400","#8B4513","#A0522D","#D2691E","#DEB887","#F4A460","#B22222","#CD5C5C","#FF6347","#4682B4","#5F9EA0","#F5DEB3","#708090","#2F4F4F"]
+    };
+    const list = presets[mode] || FiftyColors;
+    const grid = document.getElementById("numPaletteGrid");
+    if (!grid) return;
+    grid.innerHTML = list.map((c, i) => {
+      const lightBg = ["#FFFFFF","#FFFF00","#FFF44F","#E0FFFF","#FFC0CB","#F5DEB3","#D3D3D3","#F0E68C","#FFD1DC","#FFECB3","#C8E6C9","#B3E5FC","#E1BEE7","#F8BBD0","#DCEDC8","#B2EBF2","#D1C4E9","#FFE0B2","#F0F4C3","#B2DFDB","#BBDEFB","#F5F5F5","#FFCCBC","#CFD8DC","#FFF9C4","#E6EE9C","#FFF8E7","#F7E7CE","#FADADD","#E6E6FA"].includes(c.toUpperCase());
+      return `<div class="num-swatch" data-color="${c}" data-num="${i + 1}" style="background:${c}; color:${lightBg ? "#000" : "#fff"}; text-shadow:${lightBg ? "none" : "0 1px 2px #000"};" title="لون ${i + 1}">${i + 1}</div>`;
+    }).join("");
+  },
+
+  selectCustomSwatch(hex, num, el) {
+    this.setColor(hex);
+    const numInput = document.getElementById("colorNumInput");
+    if (numInput) numInput.value = num;
+    document.querySelectorAll(".num-swatch").forEach(s => s.classList.remove("active"));
+    if (el) el.classList.add("active");
+  },
+  renderPalette() {
+    const grid = document.getElementById("numPaletteGrid");
+    grid.innerHTML = FiftyColors.map((c, i) => {
+      const lightBg = ["#FFFFFF", "#FFFF00", "#FFF44F", "#E0FFFF", "#FFC0CB", "#F5DEB3", "#D3D3D3", "#F0E68C"].includes(c);
+      return `<div class="num-swatch" data-color="${c}" data-num="${i + 1}" style="background:${c}; color:${lightBg ? "#000" : "#fff"}; text-shadow:${lightBg ? "none" : "0 1px 2px #000"};" title="لون رقم ${i + 1}">${i + 1}</div>`;
+    }).join("");
+
+    const numInput = document.getElementById("colorNumInput");
+    if (numInput) {
+      numInput.oninput = (e) => this.selectColorByNumber(e.target.value);
+    }
+  },
+
+  setColor(c) {
+    if (!c) return;
+    this.color = c;
+    const picker = document.getElementById("colorPicker");
+    if (picker && c.startsWith("#") && c.length === 7) picker.value = c;
+    const prev = document.getElementById("currentColorPreview");
+    if (prev) prev.style.background = c;
+    this.playTone(600);
+  },
+
+  addLayer() {
+    const stack = document.getElementById('canvasStack');
+    const canvas = document.createElement('canvas');
+    canvas.width = 700;
+    canvas.height = 700;
+    canvas.id = `layer${this.layers.length}`;
+    stack.insertBefore(canvas, document.getElementById('lineArtLayer'));
+    this.layers.push(canvas);
+    this.activeLayerIdx = this.layers.length - 1;
+    this.renderLayersUI();
+    this.saveHistory();
+  },
+
+  renderLayersUI() {
+    const list = document.getElementById('layersList');
+    list.innerHTML = this.layers.map((l, idx) => `
+      <div class="layer-item ${idx === this.activeLayerIdx ? 'active' : ''}" onclick="Studio.activeLayerIdx=${idx}; Studio.renderLayersUI()">
+        <span>طبقة ${idx + 1}</span>
+        <span style="font-size:10px; color:var(--text-muted)">${idx === this.activeLayerIdx ? 'نشطة ✓' : ''}</span>
+      </div>
+    `).reverse().join('');
+  },
+
+  loadArtwork(type) {
+    const svgEl = document.getElementById('lineArtLayer');
+    svgEl.innerHTML = ArtworkGenerator.getSVG(type);
+    this.rasterizeLineArtForFill();
+  },
+
+  // بناء ماسك الأمان الصارم من الخطوط السوداء بأبعاد ثابتة 700x700 مهما اختلف حجم الشاشة
+  rasterizeLineArtForFill() {
+    const svgEl = document.getElementById("lineArtLayer");
+    const inner = svgEl.innerHTML;
+    if (!inner.trim()) {
+      this.boundaryCanvas = null;
+      return;
+    }
+    const fixedSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="700" height="700" viewBox="0 0 700 700">${inner}</svg>`;
+    const img = new Image();
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(fixedSvg);
+    img.onload = () => {
+      this.boundaryCanvas = document.createElement("canvas");
+      this.boundaryCanvas.width = 700;
+      this.boundaryCanvas.height = 700;
+      const bCtx = this.boundaryCanvas.getContext("2d");
+      bCtx.clearRect(0, 0, 700, 700);
+      bCtx.drawImage(img, 0, 0, 700, 700);
+
+      // استخراج مصفوفة الخطوط السوداء المحظور تلوينها (Security Line Mask)
+      const data = bCtx.getImageData(0, 0, 700, 700).data;
+      this.lineShield = new Uint8Array(700 * 700);
+      for (let i = 0; i < 700 * 700; i++) {
+        // أي بكسل غير شفاف في طبقة الرسمة هو خط أسود محمي
+        if (data[i * 4 + 3] > 40) {
+          this.lineShield[i] = 1;
+        }
+      }
+    };
+  },
+
+  getPos(e) {
+    const stack = document.getElementById('canvasStack');
+    const rect = stack.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const scaleX = 700 / rect.width;
+    const scaleY = 700 / rect.height;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY
+    };
+  },
+
+  applySymmetryDraw(ctx, x1, y1, x2, y2) {
+    const cx = 350, cy = 350;
+    const n = parseInt(this.symmetry);
+    for (let i = 0; i < n; i++) {
+      const angle = (i * 2 * Math.PI) / n;
+      const cos = Math.cos(angle), sin = Math.sin(angle);
+      const rx1 = cx + (x1 - cx) * cos - (y1 - cy) * sin;
+      const ry1 = cy + (x1 - cx) * sin + (y1 - cy) * cos;
+      const rx2 = cx + (x2 - cx) * cos - (y2 - cy) * sin;
+      const ry2 = cy + (x2 - cx) * sin + (y2 - cy) * cos;
+
+      ctx.beginPath();
+      ctx.moveTo(rx1, ry1);
+      ctx.lineTo(rx2, ry2);
+      ctx.stroke();
+    }
+  },
+
+  floodFill(startX, startY) {
+    const canvas = this.layers[this.activeLayerIdx];
+    const ctx = canvas.getContext('2d');
+    const imgData = ctx.getImageData(0, 0, 700, 700);
+    const data = imgData.data;
+
+    let boundData = null;
+    if (this.boundaryCanvas) {
+      boundData = this.boundaryCanvas.getContext('2d').getImageData(0, 0, 700, 700).data;
+    }
+
+    const sx = Math.floor(startX), sy = Math.floor(startY);
+    if (sx < 0 || sx >= 700 || sy < 0 || sy >= 700) return;
+
+    const hex = this.color.replace('#', '');
+    const fillR = parseInt(hex.substring(0, 2), 16);
+    const fillG = parseInt(hex.substring(2, 4), 16);
+    const fillB = parseInt(hex.substring(4, 6), 16);
+    const fillA = Math.floor(this.opacity * 255);
+
+    const startIdx = (sy * 700 + sx) * 4;
+    const targetR = data[startIdx], targetG = data[startIdx + 1], targetB = data[startIdx + 2], targetA = data[startIdx + 3];
+    if (targetR === fillR && targetG === fillG && targetB === fillB && targetA === fillA) return;
+
+    const visited = new Uint8Array(700 * 700);
+    const stack = [[sx, sy]];
+
+    while (stack.length > 0) {
+      const [x, y] = stack.pop();
+      if (x < 0 || x >= 700 || y < 0 || y >= 700) continue;
+      const pos = y * 700 + x;
+      if (visited[pos]) continue;
+      visited[pos] = 1;
+
+      const idx = pos * 4;
+      // التوقف عند حدود الرسمة الخطية SVG
+      if (boundData && boundData[idx + 3] > 80) continue;
+
+      if (Math.abs(data[idx] - targetR) < 30 && Math.abs(data[idx + 1] - targetG) < 30 && Math.abs(data[idx + 2] - targetB) < 30 && Math.abs(data[idx + 3] - targetA) < 30) {
+        data[idx] = fillR;
+        data[idx + 1] = fillG;
+        data[idx + 2] = fillB;
+        data[idx + 3] = fillA;
+        stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+      }
+    }
+    ctx.putImageData(imgData, 0, 0);
+    this.playTone(750);
+  },
+
+  drawCustomStamp(ctx, x, y, type) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.fillStyle = this.color;
+    ctx.strokeStyle = "#ffffff";
+    ctx.lineWidth = 1.2;
+    ctx.globalAlpha = this.opacity;
+    const r = this.size * 1.4;
+    ctx.beginPath();
+    if (type === "stamp_heart") {
+      ctx.moveTo(0, r * 0.3);
+      ctx.bezierCurveTo(-r, -r * 0.5, -r * 0.5, -r * 1.2, 0, -r * 0.4);
+      ctx.bezierCurveTo(r * 0.5, -r * 1.2, r, -r * 0.5, 0, r * 0.3);
+    } else if (type === "stamp_flower") {
+      for (let i = 0; i < 6; i++) {
+        const a = (i * Math.PI) / 3;
+        ctx.moveTo(0, 0);
+        ctx.arc(Math.cos(a) * r * 0.5, Math.sin(a) * r * 0.5, r * 0.45, 0, Math.PI * 2);
+      }
+    } else if (type === "stamp_butterfly") {
+      ctx.ellipse(-r * 0.45, -r * 0.2, r * 0.5, r * 0.35, -0.4, 0, Math.PI * 2);
+      ctx.ellipse(r * 0.45, -r * 0.2, r * 0.5, r * 0.35, 0.4, 0, Math.PI * 2);
+      ctx.ellipse(-r * 0.35, r * 0.3, r * 0.35, r * 0.25, 0.4, 0, Math.PI * 2);
+      ctx.ellipse(r * 0.35, r * 0.3, r * 0.35, r * 0.25, -0.4, 0, Math.PI * 2);
+    } else if (type === "stamp_star") {
+      for (let i = 0; i < 8; i++) {
+        const rad = i % 2 === 0 ? r : r * 0.3;
+        const a = (i * Math.PI) / 4;
+        i === 0 ? ctx.moveTo(Math.cos(a) * rad, Math.sin(a) * rad) : ctx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad);
+      }
+    } else {
+      ctx.moveTo(0, -r); ctx.lineTo(r * 0.7, 0); ctx.lineTo(0, r); ctx.lineTo(-r * 0.7, 0);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  },
+  drawStamp(ctx, x, y) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate((this.currentTool.config.rotation || 0) * Math.PI / 180);
+    ctx.fillStyle = this.color;
+    ctx.strokeStyle = this.color;
+    ctx.globalAlpha = this.opacity;
+    const r = this.size * 1.5;
+    ctx.beginPath();
+    const sides = (this.currentTool.config.shapeIndex % 6) + 3;
+    for (let i = 0; i < sides; i++) {
+      const a = (i * 2 * Math.PI) / sides;
+      const px = r * Math.cos(a), py = r * Math.sin(a);
+      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  },
+
+  saveHistory() {
+    const canvas = this.layers[this.activeLayerIdx];
+    this.history.push({
+      layerIdx: this.activeLayerIdx,
+      data: canvas.toDataURL()
+    });
+    if (this.history.length > 40) this.history.shift();
+  },
+
+  undo() {
+    if (this.history.length <= 1) return;
+    this.history.pop();
+    const last = this.history[this.history.length - 1];
+    const canvas = this.layers[last.layerIdx];
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.src = last.data;
+    img.onload = () => {
+      ctx.clearRect(0, 0, 700, 700);
+      ctx.drawImage(img, 0, 0);
+    };
+    this.playTone(320);
+  },
+
+  clearActiveLayer() {
+    const ctx = this.layers[this.activeLayerIdx].getContext('2d');
+    ctx.clearRect(0, 0, 700, 700);
+    this.saveHistory();
+  },
+
+  exportPNG() {
+    const exportCanvas = document.createElement('canvas');
+    exportCanvas.width = 1400;
+    exportCanvas.height = 1400;
+    const eCtx = exportCanvas.getContext('2d');
+    eCtx.fillStyle = '#ffffff';
+    eCtx.fillRect(0, 0, 1400, 1400);
+
+    this.layers.forEach(l => eCtx.drawImage(l, 0, 0, 1400, 1400));
+
+    const svgEl = document.getElementById('lineArtLayer');
+    const xml = new XMLSerializer().serializeToString(svgEl);
+    const img = new Image();
+    img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(xml)));
+    img.onload = () => {
+      eCtx.drawImage(img, 0, 0, 1400, 1400);
+      const link = document.createElement('a');
+      link.download = `ProArt-Masterpiece-${Date.now()}.png`;
+      link.href = exportCanvas.toDataURL('image/png');
+      link.click();
+    };
+  },
+
+  bindEvents() {
+    const stack = document.getElementById('canvasStack');
+    const viewport = document.getElementById('viewport');
+
+    const pGrid = document.getElementById("numPaletteGrid");
+    if (pGrid) {
+      pGrid.addEventListener("click", (e) => {
+        const sw = e.target.closest(".num-swatch");
+        if (!sw) return;
+        const hex = sw.getAttribute("data-color");
+        const num = sw.getAttribute("data-num");
+        if (hex) {
+          this.setColor(hex);
+          const inp = document.getElementById("colorNumInput");
+          if (inp) inp.value = num;
+          document.querySelectorAll(".num-swatch").forEach(s => s.classList.remove("active"));
+          sw.classList.add("active");
+        }
+      });
+    }
+    const cPicker = document.getElementById("colorPicker");
+    if (cPicker) {
+      cPicker.addEventListener("input", (e) => this.setColor(e.target.value));
+      cPicker.addEventListener("change", (e) => this.setColor(e.target.value));
+    }
+    document.getElementById('brushSize').oninput = e => { this.size = parseInt(e.target.value); document.getElementById('sizeVal').innerText = this.size; };
+    document.getElementById('brushOpacity').oninput = e => this.opacity = parseInt(e.target.value) / 100;
+    document.getElementById('symmetryMode').onchange = e => this.symmetry = e.target.value;
+    document.getElementById('colorPicker').oninput = e => this.setColor(e.target.value);
+
+    document.getElementById('toolSearch').oninput = e => {
+      const q = e.target.value.trim().toLowerCase();
+      if (!q) return this.renderTools(ToolRegistry.slice(0, 90));
+      this.renderTools(ToolRegistry.filter(t => t.name.toLowerCase().includes(q) || t.category.includes(q)));
+    };
+
+    const startDraw = (e) => {
+      if (e.button === 1 || e.shiftKey) {
+        this.isPanning = true;
+        return;
+      }
+      const pos = this.getPos(e);
+      const cfg = this.currentTool.config;
+      const ctx = this.layers[this.activeLayerIdx].getContext('2d');
+
+      const eng = this.currentTool.engine || "ink";
+      if (this.tapFillMode || eng === "fill" || eng === "gradfill") {
+        this.floodFill(pos.x, pos.y, eng === "gradfill");
+        this.saveHistory();
+        return;
+      }
+      if (eng.startsWith("stamp_")) {
+        this.drawCustomStamp(ctx, pos.x, pos.y, eng);
+        this.saveHistory();
+        return;
+      }
+      if (eng === "eyedropper") {
+        const p = ctx.getImageData(Math.floor(pos.x), Math.floor(pos.y), 1, 1).data;
+        if (p[3] > 0) {
+          const hex = "#" + [p[0], p[1], p[2]].map(v => v.toString(16).padStart(2, "0")).join("");
+          this.setColor(hex);
+        }
+        return;
+      }
+
+      this.isDrawing = true;
+      this.lastX = pos.x;
+      this.lastY = pos.y;
+      if (this.smartLock && document.getElementById("artworkSelector").value !== "blank") {
+        this.buildRegionMask(pos.x, pos.y);
+        if (!this.strokeBufferCanvas) {
+          this.strokeBufferCanvas = document.createElement("canvas");
+          this.strokeBufferCanvas.width = 700;
+          this.strokeBufferCanvas.height = 700;
+        }
+        this.strokeBufferCanvas.getContext("2d").clearRect(0, 0, 700, 700);
+        this.preStrokeSnapshot = document.createElement("canvas");
+        this.preStrokeSnapshot.width = 700;
+        this.preStrokeSnapshot.height = 700;
+        this.preStrokeSnapshot.getContext("2d").drawImage(ctx.canvas, 0, 0);
+      } else {
+        this.activeMaskCanvas = null;
+      }
+    };
+
+    const moveDraw = (e) => {
+      if (this.isPanning) {
+        this.panX += e.movementX;
+        this.panY += e.movementY;
+        stack.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.zoom})`;
+        return;
+      }
+      if (!this.isDrawing) return;
+      const pos = this.getPos(e);
+      const targetCtx = this.layers[this.activeLayerIdx].getContext("2d");
+      const useMask = (this.smartLock && this.activeMaskCanvas && this.strokeBufferCanvas && this.preStrokeSnapshot);
+      const ctx = useMask ? this.strokeBufferCanvas.getContext("2d") : targetCtx;
+      const tool = this.currentTool;
+      const eng = tool.engine || "ink";
+      const realSize = Math.max(1, this.size * (tool.sizeMult || 1));
+      const realAlpha = Math.min(1, this.opacity * (tool.alphaMod || 1));
+
+      ctx.save();
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.globalAlpha = realAlpha;
+      ctx.strokeStyle = this.color;
+      ctx.fillStyle = this.color;
+
+      if (eng === "eraser_soft" || eng === "eraser_hard") {
+        ctx.globalCompositeOperation = "destination-out";
+        ctx.lineWidth = realSize;
+        if (eng === "eraser_soft") { ctx.shadowColor = "#000"; ctx.shadowBlur = realSize * 0.6; }
+        this.applySymmetryDraw(ctx, this.lastX, this.lastY, pos.x, pos.y);
+      } else if (eng === "watercolor") {
+        ctx.globalAlpha = realAlpha * 0.18;
+        ctx.lineWidth = realSize * 1.6;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = realSize * 0.8;
+        this.applySymmetryDraw(ctx, this.lastX, this.lastY, pos.x, pos.y);
+      } else if (eng === "oil") {
+        ctx.lineWidth = realSize;
+        for (let i = -2; i <= 2; i++) {
+          ctx.globalAlpha = realAlpha * (0.6 + Math.abs(i) * 0.1);
+          this.applySymmetryDraw(ctx, this.lastX + i * 2, this.lastY - i * 2, pos.x + i * 2, pos.y - i * 2);
+        }
+      } else if (eng === "calligraphy") {
+        ctx.lineCap = "butt";
+        ctx.lineWidth = realSize * 1.4;
+        this.applySymmetryDraw(ctx, this.lastX - 4, this.lastY + 4, pos.x - 4, pos.y + 4);
+      } else if (eng === "pencil" || eng === "charcoal") {
+        const dots = eng === "charcoal" ? 18 : 8;
+        for (let i = 0; i < dots; i++) {
+          const rx = pos.x + (Math.random() - 0.5) * realSize;
+          const ry = pos.y + (Math.random() - 0.5) * realSize;
+          ctx.globalAlpha = realAlpha * Math.random() * 0.6;
+          ctx.fillRect(rx, ry, eng === "charcoal" ? 2.5 : 1.3, eng === "charcoal" ? 2.5 : 1.3);
+        }
+      } else if (eng === "airbrush") {
+        const rad = realSize * 1.5;
+        const grad = ctx.createRadialGradient(pos.x, pos.y, 1, pos.x, pos.y, rad);
+        grad.addColorStop(0, this.color);
+        grad.addColorStop(1, "transparent");
+        ctx.fillStyle = grad;
+        ctx.globalAlpha = realAlpha * 0.35;
+        ctx.beginPath(); ctx.arc(pos.x, pos.y, rad, 0, Math.PI * 2); ctx.fill();
+      } else if (eng === "glitter" || eng === "stardust") {
+        for (let i = 0; i < 6; i++) {
+          const gx = pos.x + (Math.random() - 0.5) * realSize * 2.2;
+          const gy = pos.y + (Math.random() - 0.5) * realSize * 2.2;
+          ctx.fillStyle = i % 2 === 0 ? "#ffffff" : (eng === "stardust" ? "#ffd700" : this.color);
+          ctx.globalAlpha = Math.random();
+          const s = Math.random() * 4 + 1;
+          ctx.fillRect(gx, gy, s, s);
+        }
+      } else if (eng === "neon" || eng === "halo" || eng === "holo") {
+        ctx.globalCompositeOperation = "lighter";
+        ctx.lineWidth = eng === "neon" ? realSize * 0.5 : realSize * 1.3;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = realSize * 1.8;
+        if (eng === "holo") ctx.filter = `hue-rotate(${(pos.x + pos.y) % 360}deg)`;
+        this.applySymmetryDraw(ctx, this.lastX, this.lastY, pos.x, pos.y);
+        if (eng === "neon") {
+          ctx.strokeStyle = "#ffffff";
+          ctx.lineWidth = Math.max(1, realSize * 0.2);
+          this.applySymmetryDraw(ctx, this.lastX, this.lastY, pos.x, pos.y);
+        }
+      } else if (eng === "ribbon") {
+        ctx.lineWidth = 1.5;
+        for (let i = 0; i < 4; i++) {
+          const off = Math.sin((pos.x + i * 10) * 0.05) * realSize * 0.6;
+          this.applySymmetryDraw(ctx, this.lastX + off, this.lastY - off, pos.x + off, pos.y - off);
+        }
+      } else if (eng === "bubbles" || eng === "foliage") {
+        ctx.beginPath();
+        const r = (Math.random() * 0.6 + 0.4) * realSize;
+        if (eng === "bubbles") {
+          ctx.arc(pos.x, pos.y, r, 0, Math.PI * 2);
+          ctx.stroke();
+        } else {
+          ctx.ellipse(pos.x, pos.y, r, r * 0.45, Math.random() * Math.PI, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else if (eng === "smudge") {
+        ctx.filter = "blur(6px)";
+        ctx.globalAlpha = 0.25;
+        ctx.drawImage(this.layers[this.activeLayerIdx], pos.x - realSize, pos.y - realSize, realSize * 2, realSize * 2, pos.x - realSize + (pos.x - this.lastX) * 0.4, pos.y - realSize + (pos.y - this.lastY) * 0.4, realSize * 2, realSize * 2);
+      } else {
+        ctx.lineWidth = realSize;
+        this.applySymmetryDraw(ctx, this.lastX, this.lastY, pos.x, pos.y);
+      }
+      ctx.restore();
+
+      if (useMask) {
+        const clipped = document.createElement("canvas");
+        clipped.width = 700;
+        clipped.height = 700;
+        const cCtx = clipped.getContext("2d");
+        cCtx.drawImage(this.strokeBufferCanvas, 0, 0);
+        cCtx.globalCompositeOperation = "destination-in";
+        cCtx.drawImage(this.activeMaskCanvas, 0, 0);
+
+        targetCtx.clearRect(0, 0, 700, 700);
+        targetCtx.drawImage(this.preStrokeSnapshot, 0, 0);
+        if (eng === "eraser_soft" || eng === "eraser_hard") {
+          targetCtx.globalCompositeOperation = "destination-out";
+          const eMask = document.createElement("canvas");
+          eMask.width = 700; eMask.height = 700;
+          const emCtx = eMask.getContext("2d");
+          emCtx.drawImage(this.activeMaskCanvas, 0, 0);
+          targetCtx.drawImage(eMask, 0, 0);
+          targetCtx.globalCompositeOperation = "source-over";
+        } else {
+          targetCtx.drawImage(clipped, 0, 0);
+        }
+      }
+
+      this.lastX = pos.x;
+      this.lastY = pos.y;
+    };
+
+    const endDraw = () => {
+      if (this.isPanning) this.isPanning = false;
+      if (this.isDrawing) {
+        this.isDrawing = false;
+        this.saveHistory();
+      }
+    };
+
+    stack.addEventListener('mousedown', startDraw);
+    window.addEventListener('mousemove', moveDraw);
+    window.addEventListener('mouseup', endDraw);
+    stack.addEventListener('touchstart', startDraw, { passive: false });
+    window.addEventListener('touchmove', moveDraw, { passive: false });
+    window.addEventListener('touchend', endDraw);
+
+    // التكبير بعجلة الماوس فقط عند الضغط على Ctrl حتى لا يعطل التمرير لأسفل
+    viewport.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        this.zoom += e.deltaY < 0 ? 0.1 : -0.1;
+        this.zoom = Math.min(Math.max(0.4, this.zoom), 5);
+        stack.style.transform = `translate(${this.panX}px, ${this.panY}px) scale(${this.zoom})`;
+      }
+    }, { passive: false });
+  }
+};
+
+window.addEventListener('DOMContentLoaded', () => Studio.init());
+</script>
+<div id="brushCursor" style="position:fixed; pointer-events:none; border:1.5px solid #00e5ff; border-radius:50%; transform:translate(-50%,-50%); z-index:9999; display:none; box-shadow:0 0 4px #000;"></div>
+<script>
+document.addEventListener("mousemove", (e) => {
+  const cur = document.getElementById("brushCursor");
+  const stack = document.getElementById("canvasStack");
+  if (!cur || !stack) return;
+  const rect = stack.getBoundingClientRect();
+  if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+    cur.style.display = "block";
+    cur.style.left = e.clientX + "px";
+    cur.style.top = e.clientY + "px";
+    const visualSize = Studio.size * (rect.width / 700);
+    cur.style.width = visualSize + "px";
+    cur.style.height = visualSize + "px";
+    stack.style.cursor = "none";
+  } else {
+    cur.style.display = "none";
+  }
+});
+</script>
+</body>
