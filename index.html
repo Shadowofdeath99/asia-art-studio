@@ -16,10 +16,69 @@
     --accent-mint: #00ff88;
     --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
-    --border-subtle: rgba(255, 255, 255, 0.12);
+    --border-subtle: rgba(255, 255, 255, 0.14);
   }
+
+  /* الوضع الأساسي الفاتح (الأبيض المشرق) */
+  body.light-theme {
+    --bg-main: #f4f6fb;
+    --bg-panel: #ffffff;
+    --bg-card: #ffffff;
+    --bg-hover: #eef2ff;
+    --text-primary: #1e293b;
+    --text-secondary: #475569;
+    --border-subtle: rgba(15, 23, 42, 0.14);
+  }
+  body.light-theme .main-row-arena {
+    background: radial-gradient(circle at center, #ffffff 0%, #e2e8f0 100%) !important;
+  }
+  body.light-theme .canvas-stack {
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.18) !important;
+    border: 2px solid #cbd5e1;
+  }
+  body.light-theme .card-header {
+    color: #b45309 !important;
+  }
+  body.light-theme .edge-tab {
+    background: linear-gradient(135deg, #ffffff, #f1f5f9) !important;
+    color: #0f172a !important;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.2) !important;
+  }
+  body.light-theme #colorNumInput,
+  body.light-theme #toolSearch,
+  body.light-theme #symmetryMode,
+  body.light-theme #artworkSelector {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+  }
+
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, system-ui, sans-serif; }
-  body { background: var(--bg-main); color: var(--text-primary); overflow-x: auto; overflow-y: auto; }
+  body { background: var(--bg-main); color: var(--text-primary); overflow-x: hidden; overflow-y: auto; transition: background 0.3s, color 0.3s; }
+
+  /* ألسنة الحافظات البارزة على جانبي الشاشة */
+  .edge-tab {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999;
+    background: linear-gradient(135deg, #1e2235, #121420);
+    border: 2px solid var(--accent-gold);
+    color: #fff;
+    padding: 12px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+    transition: all 0.25s ease;
+  }
+  .edge-tab span:first-child { font-size: 20px; }
+  .edge-tab:hover { transform: translateY(-50%) scale(1.07); }
+  .edge-tab-right { right: 0; border-right: none; border-radius: 14px 0 0 14px; border-color: var(--accent-gold); color: var(--accent-gold); }
+  .edge-tab-left { left: 0; border-left: none; border-radius: 0 14px 14px 0; border-color: var(--accent-cyan); color: var(--accent-cyan); }
 
   /* 1. شريط رسالة بابا مينا والحكم في الأعلى */
   .asia-banner {
@@ -31,7 +90,7 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 12px;
-    font-size: 23px;
+    font-size: 22px;
     line-height: 1.5;
     color: #ffe8f3;
     text-align: center;
@@ -43,11 +102,11 @@
     padding: 4px 14px;
     border-radius: 20px;
     font-weight: 800;
-    font-size: 17px;
+    font-size: 16px;
   }
   #asiaQuote { transition: opacity 0.35s ease; font-weight: 600; }
 
-  /* 2. صف ثلاثي إجباري بجانب بعض: يمين (ألوان) | وسط (رسمة) | يسار (فرش) */
+  /* 2. الساحة الثلاثية: يمين (ألوان) | وسط (رسمة) | يسار (فرش) */
   .main-row-arena {
     display: flex;
     flex-direction: row;
@@ -55,10 +114,11 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    padding: 12px;
+    padding: 12px 38px;
     background: radial-gradient(circle at center, #1b1e2b 0%, #090a0e 100%);
     border-bottom: 2px solid var(--border-subtle);
     width: 100%;
+    transition: all 0.3s ease;
   }
 
   .side-column {
@@ -75,27 +135,35 @@
     gap: 8px;
     max-height: 750px;
     overflow-y: auto;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.45);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  }
+  .side-column.dock-collapsed {
+    display: none !important;
   }
 
   .center-column {
-    flex: 1;
+    flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    min-width: 340px;
+    min-width: 300px;
   }
 
   .canvas-stack {
     position: relative;
-    width: 660px;
-    height: 660px;
+    width: 650px;
+    height: 650px;
     background: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     touch-action: none;
+    transition: width 0.25s, height 0.25s;
+  }
+  .main-row-arena.both-collapsed .canvas-stack {
+    width: min(88vw, 720px);
+    height: min(88vw, 720px);
   }
   .canvas-stack canvas, .canvas-stack svg {
     position: absolute;
@@ -108,13 +176,6 @@
     pointer-events: none;
     z-index: 50;
     mix-blend-mode: multiply;
-  }
-
-  @media (max-width: 1320px) {
-    .canvas-stack { width: 520px; height: 520px; }
-  }
-  @media (max-width: 1080px) {
-    .canvas-stack { width: 400px; height: 400px; }
   }
 
   .card-header {
@@ -135,7 +196,7 @@
     padding: 6px 10px;
     border-radius: 8px;
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -144,9 +205,9 @@
     transition: 0.15s;
   }
   .dash-btn:hover { background: var(--bg-hover); border-color: var(--accent-cyan); }
-  .dash-btn.active-pink { border-color: var(--accent-pink); color: #ff85a8; background: rgba(255,42,109,0.15); }
-  .dash-btn.active-gold { border-color: var(--accent-gold); color: var(--accent-gold); background: rgba(255,215,0,0.15); }
-  .dash-btn.active-mint { border-color: var(--accent-mint); color: var(--accent-mint); background: rgba(0,255,136,0.15); }
+  .dash-btn.active-pink { border-color: var(--accent-pink); color: #ff2a6d; background: rgba(255,42,109,0.12); }
+  .dash-btn.active-gold { border-color: #d97706; color: #d97706; background: rgba(255,215,0,0.14); }
+  .dash-btn.active-mint { border-color: #059669; color: #059669; background: rgba(0,255,136,0.14); }
   .dash-btn.btn-export { background: linear-gradient(135deg, #00b4d8, #0077b6); border: none; color: #fff; }
 
   .quick-action-bar {
@@ -160,7 +221,7 @@
     border: 1px solid var(--border-subtle);
   }
 
-  /* شبكة الـ 50 لون على اليمين */
+  /* شبكة الـ 50 لون */
   .num-palette {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -175,17 +236,17 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 2px solid rgba(255,255,255,0.25);
+    border: 2px solid rgba(128,128,128,0.35);
     transition: transform 0.12s;
   }
   .num-swatch:hover, .num-swatch.active {
     transform: scale(1.15);
-    border-color: #ffffff;
-    box-shadow: 0 0 10px #ffd700;
+    border-color: #ff2a6d;
+    box-shadow: 0 0 10px rgba(255, 42, 109, 0.6);
     z-index: 5;
   }
 
-  /* شبكة الفرش على اليسار */
+  /* شبكة الفرش */
   .category-tabs {
     display: flex;
     gap: 4px;
@@ -195,6 +256,7 @@
   .cat-tab {
     padding: 4px 8px;
     background: var(--bg-panel);
+    border: 1px solid var(--border-subtle);
     border-radius: 6px;
     font-size: 10px;
     font-weight: 700;
@@ -202,10 +264,10 @@
     cursor: pointer;
     white-space: nowrap;
   }
-  .cat-tab.active { background: var(--accent-cyan); color: #000; }
+  .cat-tab.active { background: var(--accent-cyan); color: #000; border-color: var(--accent-cyan); }
 
   .tools-grid {
-    max-height: 460px;
+    max-height: 450px;
     overflow-y: auto;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -213,7 +275,7 @@
   }
   .tool-item {
     background: var(--bg-panel);
-    border: 1px solid transparent;
+    border: 1px solid var(--border-subtle);
     border-radius: 8px;
     padding: 7px 4px;
     text-align: center;
@@ -226,9 +288,10 @@
     gap: 4px;
   }
   .tool-item.active {
-    border-color: var(--accent-cyan);
-    background: rgba(0, 229, 255, 0.14);
-    color: #fff;
+    border-color: #0284c7;
+    background: rgba(0, 229, 255, 0.16);
+    color: var(--text-primary);
+    font-weight: 700;
   }
 
   /* القسم السفلي للوحات والطبقات */
@@ -276,123 +339,18 @@
     border-radius: 7px;
     font-size: 12px;
     cursor: pointer;
-    border: 1px solid transparent;
+    border: 1px solid var(--border-subtle);
   }
-  .layer-item.active { border-color: var(--accent-cyan); }
+  .layer-item.active { border-color: #0284c7; font-weight: bold; }
 
-  /* تحسينات التجاوب الكامل للموبايل والتابلت */
-  .side-column.hidden-drawer {
-    display: none !important;
+  @media (max-width: 1250px) {
+    .canvas-stack { width: 500px; height: 500px; }
   }
-
   @media (max-width: 960px) {
-    .asia-banner {
-      font-size: 16px !important;
-      padding: 8px 12px !important;
-    }
-    .asia-banner .badge {
-      font-size: 13px !important;
-    }
-    .main-row-arena {
-      flex-direction: column !important;
-      align-items: center !important;
-      justify-content: center !important;
-      padding: 10px 6px !important;
-      gap: 10px !important;
-    }
-    .center-column {
-      order: 1 !important;
-      width: 100% !important;
-      min-width: 100% !important;
-      align-items: center !important;
-      justify-content: center !important;
-    }
-    .canvas-stack {
-      width: min(92vw, 440px) !important;
-      height: min(92vw, 440px) !important;
-      margin: 0 auto !important;
-    }
-    #colorsColumn {
-      order: 2 !important;
-      width: 94vw !important;
-      max-width: 94vw !important;
-      max-height: 290px !important;
-    }
-    #brushesColumn {
-      order: 3 !important;
-      width: 94vw !important;
-      max-width: 94vw !important;
-      max-height: 310px !important;
-    }
-    .bottom-dashboard {
-      grid-template-columns: 1fr !important;
-      padding: 10px !important;
-    }
-    .artwork-cards {
-      grid-template-columns: 1fr 1fr !important;
-    }
-  }
-
-
-  /* ألسنة الحافظات البارزة على جانبي الشاشة */
-  .edge-tab {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 999;
-    background: linear-gradient(135deg, #1e2235, #121420);
-    border: 2px solid var(--accent-gold);
-    color: #fff;
-    padding: 12px 8px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: 800;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75);
-    transition: all 0.25s ease;
-  }
-  .edge-tab span:first-child { font-size: 20px; }
-  .edge-tab:hover { transform: translateY(-50%) scale(1.07); }
-
-  .edge-tab-right {
-    right: 0;
-    border-right: none;
-    border-radius: 14px 0 0 14px;
-    border-color: var(--accent-gold);
-    color: var(--accent-gold);
-  }
-  .edge-tab-left {
-    left: 0;
-    border-left: none;
-    border-radius: 0 14px 14px 0;
-    border-color: var(--accent-cyan);
-    color: var(--accent-cyan);
-  }
-
-  /* تمدد اللوحة تلقائياً لتأخذ مكان القوائم المطوية */
-  .main-row-arena {
-    transition: all 0.3s ease;
-  }
-  .side-column.dock-collapsed {
-    display: none !important;
-  }
-  .center-column {
-    flex: 1 1 auto !important;
-    width: 100%;
-    transition: all 0.3s ease;
-  }
-
-  /* تكبير الرسمة تلقائياً عندما تكون القوائم مطوية */
-  .main-row-arena.both-collapsed .canvas-stack {
-    width: min(88vw, 720px) !important;
-    height: min(88vw, 720px) !important;
-  }
-
-  @media (max-width: 960px) {
-    /* على الموبايل: القوائم تفتح كحافظة عائمة أنيقة فوق الشاشة عند الضغط على اللسان البارز */
+    .asia-banner { font-size: 16px; padding: 8px 12px; }
+    .asia-banner .badge { font-size: 13px; }
+    .main-row-arena { padding: 10px 6px; justify-content: center; }
+    .canvas-stack { width: min(92vw, 460px) !important; height: min(92vw, 460px) !important; margin: 0 auto; }
     #colorsColumn:not(.dock-collapsed),
     #brushesColumn:not(.dock-collapsed) {
       position: fixed !important;
@@ -402,56 +360,17 @@
       width: 270px !important;
       max-width: 82vw !important;
       max-height: 75vh !important;
-      box-shadow: 0 15px 50px rgba(0,0,0,0.92) !important;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.6) !important;
       border: 2px solid var(--accent-gold) !important;
     }
     #colorsColumn:not(.dock-collapsed) { right: 8px !important; }
     #brushesColumn:not(.dock-collapsed) { left: 8px !important; border-color: var(--accent-cyan) !important; }
-
-    .canvas-stack {
-      width: min(92vw, 480px) !important;
-      height: min(92vw, 480px) !important;
-      margin: 0 auto !important;
-    }
+    .bottom-dashboard { grid-template-columns: 1fr; }
+    .artwork-cards { grid-template-columns: 1fr 1fr; }
   }
-
-
-  /* الوضع الأساسي الفاتح (الأبيض المشرق) */
-  body.light-theme {
-    --bg-main: #f4f6fb;
-    --bg-panel: #ffffff;
-    --bg-card: #ffffff;
-    --bg-hover: #eef2ff;
-    --text-primary: #1e293b;
-    --text-secondary: #475569;
-    --border-subtle: rgba(15, 23, 42, 0.12);
-  }
-  body.light-theme .main-row-arena {
-    background: radial-gradient(circle at center, #ffffff 0%, #e2e8f0 100%) !important;
-  }
-  body.light-theme .canvas-stack {
-    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.16) !important;
-    border: 2px solid #cbd5e1;
-  }
-  body.light-theme .card-header {
-    color: #b45309 !important;
-  }
-  body.light-theme .edge-tab {
-    background: linear-gradient(135deg, #ffffff, #f1f5f9) !important;
-    color: #0f172a !important;
-    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.18) !important;
-  }
-  body.light-theme #colorNumInput,
-  body.light-theme #toolSearch,
-  body.light-theme #symmetryMode,
-  body.light-theme #artworkSelector {
-    background: #f8fafc !important;
-    color: #0f172a !important;
-  }
-
 </style>
 </head>
-<body>
+<body class="light-theme">
 
 <!-- حافظات جانبية بارزة للإخفاء والإظهار الفوري -->
 <button type="button" id="edgeTabColors" class="edge-tab edge-tab-right" onclick="toggleEdgeDock('colors')" title="إظهار / إخفاء باليتة الألوان">
@@ -464,11 +383,11 @@
   <span>الفرش</span>
 </button>
 
-<!-- 1. رسالة بابا مينا في القمة -->
+<!-- 1. رسالة بابا مينا والحكم في القمة -->
 <div class="asia-banner" id="asiaBanner">
   <span class="badge">💖 من بابا مينا لـ آسيا</span>
   <span id="asiaQuote">يا آسيا يا أغلى بنوتة في الدنيا، بابا مينا فخور بيكي.. ابدعي وارسمي وذاكري عشان تبقي أنجح بنوتة في العالم 👑✨</span>
-  <button type="button" class="dash-btn active-gold" style="padding:4px 10px; font-size:12px;" onclick="nextBabaWisdom()">💌 التالي (رسالة / حكمة)</button>
+  <button type="button" class="dash-btn" style="background:rgba(255,215,0,0.2); border-color:#ffd700; color:#ffd700;" onclick="nextBabaWisdom()">💌 التالي (رسالة / حكمة)</button>
 </div>
 
 <!-- 2. الساحة الثلاثية: يمين (الألوان) | وسط (الرسمة) | يسار (الفرش) -->
@@ -478,12 +397,12 @@
   <aside class="side-column" id="colorsColumn">
     <div class="card-header">
       <div style="display:flex; align-items:center; gap:6px;">
-        <button type="button" class="dash-btn" style="padding:2px 7px; font-size:11px; border-color:var(--accent-gold); color:var(--accent-gold);" onclick="toggleEdgeDock('colors')">✖ طي</button>
+        <button type="button" class="dash-btn active-gold" style="padding:2px 7px;" onclick="toggleEdgeDock('colors')">✖ طي</button>
         <span>🎨 الألوان</span>
       </div>
       <div style="display:flex; gap:4px; align-items:center;">
-        <span id="currentColorPreview" style="width:20px; height:20px; border-radius:50%; background:#ff0000; border:2px solid #fff; display:inline-block;"></span>
-        <input type="number" id="colorNumInput" min="1" max="50" value="1" style="width:48px; background:#0b0c10; border:1px solid var(--accent-gold); color:#fff; border-radius:5px; padding:2px; font-size:11px; text-align:center;">
+        <span id="currentColorPreview" style="width:20px; height:20px; border-radius:50%; background:#ff0000; border:2px solid #888; display:inline-block;"></span>
+        <input type="number" id="colorNumInput" min="1" max="50" value="1" style="width:48px; border:1px solid #d97706; border-radius:5px; padding:2px; font-size:11px; text-align:center;">
         <input type="color" id="colorPicker" value="#ff0000" style="width:26px; height:24px; border:none; background:none; cursor:pointer;">
       </div>
     </div>
@@ -506,8 +425,6 @@
     </div>
 
     <div class="quick-action-bar">
-      <button type="button" class="dash-btn active-gold" id="toggleColorsBtn" onclick="toggleEdgeDock('colors')">🎨 إخفاء/إظهار الألوان</button>
-      <button type="button" class="dash-btn active-pink" id="toggleBrushesBtn" onclick="toggleEdgeDock('brushes')">🖌️ إخفاء/إظهار الفرش</button>
       <button type="button" class="dash-btn" id="themeToggleBtn" onclick="toggleManualTheme()">☀️ المظهر: أبيض (ليلي 10م)</button>
       <button type="button" class="dash-btn" onclick="Studio.undo()">↩️ تراجع</button>
       <button type="button" class="dash-btn active-pink" id="freeModeBtn" onclick="Studio.activateFreeDraw()">🎨 رسم حر</button>
@@ -516,7 +433,7 @@
       <button type="button" class="dash-btn" onclick="Studio.adjustZoom(0.15)">➕</button>
       <button type="button" class="dash-btn" onclick="Studio.adjustZoom(-0.15)">➖</button>
       <button type="button" class="dash-btn" onclick="Studio.resetView()">🎯 توسيط</button>
-      <button type="button" class="dash-btn" style="color:#ff758f;" onclick="Studio.clearActiveLayer()">🗑️ مسح</button>
+      <button type="button" class="dash-btn" style="color:#e11d48;" onclick="Studio.clearActiveLayer()">🗑️ مسح</button>
       <button type="button" class="dash-btn btn-export" onclick="Studio.exportWithSignature()">🏆 حفظ بتوقيع آسيا</button>
     </div>
   </div>
@@ -525,23 +442,23 @@
   <aside class="side-column" id="brushesColumn">
     <div class="card-header">
       <div style="display:flex; align-items:center; gap:6px;">
-        <button type="button" class="dash-btn" style="padding:2px 7px; font-size:11px; border-color:var(--accent-cyan); color:var(--accent-cyan);" onclick="toggleEdgeDock('brushes')">✖ طي</button>
-        <span>🖌️ الفرش</span>
+        <button type="button" class="dash-btn" style="padding:2px 7px; border-color:#0284c7; color:#0284c7;" onclick="toggleEdgeDock('brushes')">✖ طي</button>
+        <span>🖌️ الفرش (1040)</span>
       </div>
-      <span id="activeToolBadge" style="font-size:10px; color:var(--accent-cyan);">فرشة مائية</span>
+      <span id="activeToolBadge" style="font-size:10px; color:#0284c7;">فرشة مائية</span>
     </div>
-    <div style="display:flex; flex-direction:column; gap:6px; font-size:11px; background:var(--bg-panel); padding:7px; border-radius:8px;">
+    <div style="display:flex; flex-direction:column; gap:6px; font-size:11px; background:var(--bg-panel); padding:7px; border-radius:8px; border:1px solid var(--border-subtle);">
       <label style="display:flex; justify-content:space-between; align-items:center;">
-        <span>الحجم: <strong id="sizeVal" style="color:var(--accent-cyan);">14</strong></span>
-        <input type="range" id="brushSize" min="1" max="100" value="14" style="width:120px; accent-color:var(--accent-cyan);">
+        <span>الحجم: <strong id="sizeVal" style="color:#0284c7;">14</strong></span>
+        <input type="range" id="brushSize" min="1" max="100" value="14" style="width:120px;">
       </label>
       <label style="display:flex; justify-content:space-between; align-items:center;">
         <span>الشفافية:</span>
-        <input type="range" id="brushOpacity" min="10" max="100" value="100" style="width:120px; accent-color:var(--accent-cyan);">
+        <input type="range" id="brushOpacity" min="10" max="100" value="100" style="width:120px;">
       </label>
       <label style="display:flex; justify-content:space-between; align-items:center;">
         <span>التناظر:</span>
-        <select id="symmetryMode" style="background:#0b0c10; color:#fff; border:1px solid var(--border-subtle); border-radius:5px; padding:2px 6px;">
+        <select id="symmetryMode" style="border:1px solid var(--border-subtle); border-radius:5px; padding:2px 6px;">
           <option value="1">عادي (1x)</option>
           <option value="2">مرآة (2x)</option>
           <option value="4">رباعي (4x)</option>
@@ -550,7 +467,7 @@
         </select>
       </label>
     </div>
-    <input type="text" id="toolSearch" placeholder="🔍 ابحثي (جليتر، مائية، زيتي...)" style="width:100%; background:#0b0c10; border:1px solid var(--border-subtle); color:#fff; padding:6px 8px; border-radius:7px; font-size:11px;">
+    <input type="text" id="toolSearch" placeholder="🔍 ابحثي (جليتر، مائية، زيتي...)" style="width:100%; border:1px solid var(--border-subtle); padding:6px 8px; border-radius:7px; font-size:11px;">
     <div class="category-tabs" id="categoryTabs"></div>
     <div class="tools-grid" id="toolsGrid"></div>
   </aside>
@@ -568,7 +485,7 @@
       <span>📁 أضيفي صورة من جهازك للتلوين (أول اختيار)</span>
     </label>
     <input type="file" id="uploadImageInput" accept="image/*" style="display:none;" onchange="Studio.importDeviceImage(event)">
-    <select id="artworkSelector" onchange="Studio.loadArtwork(this.value)" style="width:100%; background:#0b0c10; color:#ffd700; border:1px solid var(--border-subtle); border-radius:8px; padding:7px 10px; font-size:12px; font-weight:700;"></select>
+    <select id="artworkSelector" onchange="Studio.loadArtwork(this.value)" style="width:100%; border:1px solid var(--border-subtle); border-radius:8px; padding:7px 10px; font-size:12px; font-weight:700;"></select>
     <div class="artwork-cards" id="threeArtCards"></div>
   </div>
 
@@ -1846,6 +1763,21 @@ const Studio = {
 
 
 
+
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  if (window.innerWidth <= 960) {
+    // على الموبايل: إبقاء الألوان ظاهرة وإخفاء الفرش مؤقتاً لتوسيط اللوحة بوضوح تام، ويمكن إظهارها بضغطة زر
+    const bCol = document.getElementById("brushesColumn");
+    if (bCol) bCol.classList.add("hidden-drawer");
+  }
+});
+
+
+
+
 function toggleEdgeDock(which) {
   const cCol = document.getElementById("colorsColumn");
   const bCol = document.getElementById("brushesColumn");
@@ -1869,39 +1801,12 @@ function toggleEdgeDock(which) {
   const cHidden = cCol && cCol.classList.contains("dock-collapsed");
   const bHidden = bCol && bCol.classList.contains("dock-collapsed");
 
-  if (arena) {
-    arena.classList.toggle("both-collapsed", cHidden && bHidden);
-  }
-  if (tabC) tabC.style.opacity = cHidden ? "1" : "0.55";
-  if (tabB) tabB.style.opacity = bHidden ? "1" : "0.55";
+  if (arena) arena.classList.toggle("both-collapsed", cHidden && bHidden);
+  if (tabC) tabC.style.opacity = cHidden ? "1" : "0.65";
+  if (tabB) tabB.style.opacity = bHidden ? "1" : "0.65";
 }
-
-window.addEventListener("DOMContentLoaded", () => {
-  if (window.innerWidth <= 960) {
-    // على الموبايل: تبدأ القوائم مطوية داخل الحافظات البارزة وتكون الرسمة في منتصف الشاشة بكامل مساحتها
-    const cCol = document.getElementById("colorsColumn");
-    const bCol = document.getElementById("brushesColumn");
-    const arena = document.getElementById("viewport");
-    if (cCol) cCol.classList.add("dock-collapsed");
-    if (bCol) bCol.classList.add("dock-collapsed");
-    if (arena) arena.classList.add("both-collapsed");
-  }
-});
-
-  }
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  if (window.innerWidth <= 960) {
-    // على الموبايل: إبقاء الألوان ظاهرة وإخفاء الفرش مؤقتاً لتوسيط اللوحة بوضوح تام، ويمكن إظهارها بضغطة زر
-    const bCol = document.getElementById("brushesColumn");
-    if (bCol) bCol.classList.add("hidden-drawer");
-  }
-});
-
 
 let manualThemeOverride = null;
-
 function applySmartTheme(isDark) {
   const btn = document.getElementById("themeToggleBtn");
   if (isDark) {
@@ -1909,17 +1814,14 @@ function applySmartTheme(isDark) {
     if (btn) btn.innerText = "🌙 المظهر: ليلي مظلم";
   } else {
     document.body.classList.add("light-theme");
-    if (btn) btn.innerText = "☀️ المظهر: أبيض مشرق";
+    if (btn) btn.innerText = "☀️ المظهر: أبيض (ليلي 10م)";
   }
 }
 
 function checkTimeBasedTheme() {
   if (manualThemeOverride !== null) return;
-  const now = new Date();
-  const hour = now.getHours();
-  // الوضع الأساسي أبيض من 6 صباحاً حتى 9:59 مساءً، ومن 10 مساءً (22) حتى 5:59 صباحاً يتحول لمظلم تلقائياً
-  const isNightTime = (hour >= 22 || hour < 6);
-  applySmartTheme(isNightTime);
+  const hour = new Date().getHours();
+  applySmartTheme(hour >= 22 || hour < 6);
 }
 
 function toggleManualTheme() {
@@ -1930,7 +1832,15 @@ function toggleManualTheme() {
 
 window.addEventListener("DOMContentLoaded", () => {
   checkTimeBasedTheme();
-  setInterval(checkTimeBasedTheme, 30000); // فحص الساعة كل 30 ثانية للتحول التلقائي عند 10:00 مساءً تماماً
+  setInterval(checkTimeBasedTheme, 30000);
+  if (window.innerWidth <= 960) {
+    const cCol = document.getElementById("colorsColumn");
+    const bCol = document.getElementById("brushesColumn");
+    const arena = document.getElementById("viewport");
+    if (cCol) cCol.classList.add("dock-collapsed");
+    if (bCol) bCol.classList.add("dock-collapsed");
+    if (arena) arena.classList.add("both-collapsed");
+  }
 });
 
 window.addEventListener('DOMContentLoaded', () => Studio.init());
