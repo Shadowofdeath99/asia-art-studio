@@ -333,9 +333,102 @@
     }
   }
 
+
+  /* ألسنة الحافظات البارزة على جانبي الشاشة */
+  .edge-tab {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 999;
+    background: linear-gradient(135deg, #1e2235, #121420);
+    border: 2px solid var(--accent-gold);
+    color: #fff;
+    padding: 12px 8px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 800;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.75);
+    transition: all 0.25s ease;
+  }
+  .edge-tab span:first-child { font-size: 20px; }
+  .edge-tab:hover { transform: translateY(-50%) scale(1.07); }
+
+  .edge-tab-right {
+    right: 0;
+    border-right: none;
+    border-radius: 14px 0 0 14px;
+    border-color: var(--accent-gold);
+    color: var(--accent-gold);
+  }
+  .edge-tab-left {
+    left: 0;
+    border-left: none;
+    border-radius: 0 14px 14px 0;
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+  }
+
+  /* تمدد اللوحة تلقائياً لتأخذ مكان القوائم المطوية */
+  .main-row-arena {
+    transition: all 0.3s ease;
+  }
+  .side-column.dock-collapsed {
+    display: none !important;
+  }
+  .center-column {
+    flex: 1 1 auto !important;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+
+  /* تكبير الرسمة تلقائياً عندما تكون القوائم مطوية */
+  .main-row-arena.both-collapsed .canvas-stack {
+    width: min(88vw, 720px) !important;
+    height: min(88vw, 720px) !important;
+  }
+
+  @media (max-width: 960px) {
+    /* على الموبايل: القوائم تفتح كحافظة عائمة أنيقة فوق الشاشة عند الضغط على اللسان البارز */
+    #colorsColumn:not(.dock-collapsed),
+    #brushesColumn:not(.dock-collapsed) {
+      position: fixed !important;
+      top: 52% !important;
+      transform: translateY(-50%) !important;
+      z-index: 950 !important;
+      width: 270px !important;
+      max-width: 82vw !important;
+      max-height: 75vh !important;
+      box-shadow: 0 15px 50px rgba(0,0,0,0.92) !important;
+      border: 2px solid var(--accent-gold) !important;
+    }
+    #colorsColumn:not(.dock-collapsed) { right: 8px !important; }
+    #brushesColumn:not(.dock-collapsed) { left: 8px !important; border-color: var(--accent-cyan) !important; }
+
+    .canvas-stack {
+      width: min(92vw, 480px) !important;
+      height: min(92vw, 480px) !important;
+      margin: 0 auto !important;
+    }
+  }
+
 </style>
 </head>
 <body>
+
+<!-- حافظات جانبية بارزة للإخفاء والإظهار الفوري -->
+<button type="button" id="edgeTabColors" class="edge-tab edge-tab-right" onclick="toggleEdgeDock('colors')" title="إظهار / إخفاء باليتة الألوان">
+  <span>🎨</span>
+  <span>الألوان</span>
+</button>
+
+<button type="button" id="edgeTabBrushes" class="edge-tab edge-tab-left" onclick="toggleEdgeDock('brushes')" title="إظهار / إخفاء أنواع الفرش">
+  <span>🖌️</span>
+  <span>الفرش</span>
+</button>
 
 <!-- 1. رسالة بابا مينا في القمة -->
 <div class="asia-banner" id="asiaBanner">
@@ -350,7 +443,10 @@
   <!-- العمود الأيمن: باليتات الألوان -->
   <aside class="side-column" id="colorsColumn">
     <div class="card-header">
-      <span>🎨 باليتة الألوان</span>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button type="button" class="dash-btn" style="padding:2px 7px; font-size:11px; border-color:var(--accent-gold); color:var(--accent-gold);" onclick="toggleEdgeDock('colors')">✖ طي</button>
+        <span>🎨 الألوان</span>
+      </div>
       <div style="display:flex; gap:4px; align-items:center;">
         <span id="currentColorPreview" style="width:20px; height:20px; border-radius:50%; background:#ff0000; border:2px solid #fff; display:inline-block;"></span>
         <input type="number" id="colorNumInput" min="1" max="50" value="1" style="width:48px; background:#0b0c10; border:1px solid var(--accent-gold); color:#fff; border-radius:5px; padding:2px; font-size:11px; text-align:center;">
@@ -376,8 +472,8 @@
     </div>
 
     <div class="quick-action-bar">
-      <button type="button" class="dash-btn active-gold" id="toggleColorsBtn" onclick="toggleMobileDrawer('colors')">🎨 إخفاء/إظهار الألوان</button>
-      <button type="button" class="dash-btn active-pink" id="toggleBrushesBtn" onclick="toggleMobileDrawer('brushes')">🖌️ إخفاء/إظهار الفرش</button>
+      <button type="button" class="dash-btn active-gold" id="toggleColorsBtn" onclick="toggleEdgeDock('colors')">🎨 إخفاء/إظهار الألوان</button>
+      <button type="button" class="dash-btn active-pink" id="toggleBrushesBtn" onclick="toggleEdgeDock('brushes')">🖌️ إخفاء/إظهار الفرش</button>
       <button type="button" class="dash-btn" onclick="Studio.undo()">↩️ تراجع</button>
       <button type="button" class="dash-btn active-pink" id="freeModeBtn" onclick="Studio.activateFreeDraw()">🎨 رسم حر</button>
       <button type="button" class="dash-btn active-gold" id="numTapBtn" onclick="Studio.toggleTapFillMode()">🔢 تلوين باللمس: مطفأ</button>
@@ -393,7 +489,10 @@
   <!-- العمود الأيسر: أنواع الفرش -->
   <aside class="side-column" id="brushesColumn">
     <div class="card-header">
-      <span>🖌️ أنواع الفرش (1040)</span>
+      <div style="display:flex; align-items:center; gap:6px;">
+        <button type="button" class="dash-btn" style="padding:2px 7px; font-size:11px; border-color:var(--accent-cyan); color:var(--accent-cyan);" onclick="toggleEdgeDock('brushes')">✖ طي</button>
+        <span>🖌️ الفرش</span>
+      </div>
       <span id="activeToolBadge" style="font-size:10px; color:var(--accent-cyan);">فرشة مائية</span>
     </div>
     <div style="display:flex; flex-direction:column; gap:6px; font-size:11px; background:var(--bg-panel); padding:7px; border-radius:8px;">
@@ -1711,12 +1810,49 @@ const Studio = {
 };
 
 
-function toggleMobileDrawer(which) {
-  const col = document.getElementById(which === "colors" ? "colorsColumn" : "brushesColumn");
-  if (!col) return;
-  col.classList.toggle("hidden-drawer");
-  if (!col.classList.contains("hidden-drawer") && window.innerWidth <= 960) {
-    col.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+function toggleEdgeDock(which) {
+  const cCol = document.getElementById("colorsColumn");
+  const bCol = document.getElementById("brushesColumn");
+  const arena = document.getElementById("viewport");
+  const tabC = document.getElementById("edgeTabColors");
+  const tabB = document.getElementById("edgeTabBrushes");
+
+  if (which === "colors" && cCol) {
+    cCol.classList.toggle("dock-collapsed");
+    if (window.innerWidth <= 960 && !cCol.classList.contains("dock-collapsed") && bCol) {
+      bCol.classList.add("dock-collapsed");
+    }
+  }
+  if (which === "brushes" && bCol) {
+    bCol.classList.toggle("dock-collapsed");
+    if (window.innerWidth <= 960 && !bCol.classList.contains("dock-collapsed") && cCol) {
+      cCol.classList.add("dock-collapsed");
+    }
+  }
+
+  const cHidden = cCol && cCol.classList.contains("dock-collapsed");
+  const bHidden = bCol && bCol.classList.contains("dock-collapsed");
+
+  if (arena) {
+    arena.classList.toggle("both-collapsed", cHidden && bHidden);
+  }
+  if (tabC) tabC.style.opacity = cHidden ? "1" : "0.55";
+  if (tabB) tabB.style.opacity = bHidden ? "1" : "0.55";
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  if (window.innerWidth <= 960) {
+    // على الموبايل: تبدأ القوائم مطوية داخل الحافظات البارزة وتكون الرسمة في منتصف الشاشة بكامل مساحتها
+    const cCol = document.getElementById("colorsColumn");
+    const bCol = document.getElementById("brushesColumn");
+    const arena = document.getElementById("viewport");
+    if (cCol) cCol.classList.add("dock-collapsed");
+    if (bCol) bCol.classList.add("dock-collapsed");
+    if (arena) arena.classList.add("both-collapsed");
+  }
+});
+
   }
 }
 
