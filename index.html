@@ -1534,25 +1534,19 @@ const ProExtras = {
 
 
 const BabaKissTimer = {
-  activeSeconds: 0,
-  lastActivityTime: 0,
+  started: false,
 
   init() {
-    // حساب كل ثانية تكون فيها آسيا بترسم أو بتلون بنشاط (لو وقفت أكتر من 10 ثواني العداد يقف مؤقتاً)
-    setInterval(() => {
-      const now = Date.now();
-      if (Studio.isDrawing || (now - this.lastActivityTime < 5000 && this.lastActivityTime > 0)) {
-        this.activeSeconds++;
-        if (this.activeSeconds >= 180) { // 180 ثانية = 3 دقائق رسم متواصل
-          this.activeSeconds = 0;
-          this.triggerKiss();
-        }
-      }
-    }, 1000);
+    // يبدأ فقط مع أول لمسة على اللوحة
   },
 
   markActivity() {
-    this.lastActivityTime = Date.now();
+    if (this.started) return;
+    this.started = true;
+    // عداد 3 دقائق (180,000 مللي ثانية) من لحظة أول لمسة ويتكرر كل 3 دقائق
+    setInterval(() => {
+      this.triggerKiss();
+    }, 180000);
   },
 
   triggerKiss() {
@@ -1563,7 +1557,7 @@ const BabaKissTimer = {
     setTimeout(() => Studio.playTone(880), 180);
     setTimeout(() => {
       el.classList.remove("show-kiss");
-    }, 5500); // تفضل عائمة 5.5 ثواني وتختفي بنعومة
+    }, 5500);
   }
 };
 
